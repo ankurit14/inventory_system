@@ -49,9 +49,9 @@ function add_user($data, $files)
     $password    = password_hash($data['password'], PASSWORD_BCRYPT);
 
     $query = "INSERT INTO users 
-        (name, username, password, role, email, contact_no, address, department, designation, profile_image, status, created_at)
+        (name, username, password, role, email, contact_no, address, department, designation, status, created_at)
         VALUES 
-        ('$name', '$username', '$password', '$role', '$email', '$contact', '$address', '$department', '$designation', '', 'active', NOW())";
+        ('$name', '$username', '$password', '$role', '$email', '$contact', '$address', '$department', '$designation','active', NOW())";
 
     return mysqli_query($conn, $query);
 }

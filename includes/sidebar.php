@@ -37,12 +37,122 @@ $username = $_SESSION['name'] ?? 'User';
             </li>
 
             <?php if ($role == 'admin' || $role == 'hr') { ?>
-            <li><a href="<?php echo BASE_URL; ?>modules/users/index.php"><span class="pcoded-micon"><i class="ti-user"></i></span>Users</a></li>
+
+<li class="pcoded-hasmenu">
+    <a href="javascript:void(0)">
+        <span class="pcoded-micon"><i class="ti-user"></i></span>
+        <span class="pcoded-mtext">User</span>
+    </a>
+    <ul class="pcoded-submenu">
+        <li>
+            <a href="<?php echo BASE_URL; ?>modules/users/index.php">
+                <span class="pcoded-mtext">All User</span>
+            </a>
+        </li>
+        <li>
+            <a href="<?php echo BASE_URL; ?>modules/users/add.php">
+                <span class="pcoded-mtext">Add User</span>
+            </a>
+        </li>
+    </ul>
+</li>
+
+            <!-- <li><a href="<?php echo BASE_URL; ?>modules/users/index.php"><span class="pcoded-micon"><i class="ti-user"></i></span>Users</a></li> -->
             <?php } ?>
 
-            <?php if ($role == 'admin' || $role == 'hr') { ?>
-            <li><a href="<?php echo BASE_URL; ?>modules/category/index.php"><span class="pcoded-micon"><i class="ti-tag"></i></span>Category</a></li>
-            <?php } ?>
+
+ <?php if ($role === 'admin' || $role === 'hr') : ?>
+    
+    
+    <li class="pcoded-hasmenu">
+    <a href="javascript:void(0)">
+        <span class="pcoded-micon"><i class="ti-layers"></i></span>
+        <span class="pcoded-mtext">Category</span>
+    </a>
+    <ul class="pcoded-submenu">
+        <li>
+            <a href="<?php echo BASE_URL; ?>modules/Category/index.php">
+                <span class="pcoded-mtext">All Category</span>
+            </a>
+        </li>
+        <li>
+            <a href="<?php echo BASE_URL; ?>modules/Category/add.php">
+                <span class="pcoded-mtext">Add Category</span>
+            </a>
+        </li>
+    </ul>
+</li>
+<?php endif; ?>
+    
+    
+    <!-- <li>
+        <a href="<?php echo BASE_URL; ?>modules/category/index.php">
+            <span class="pcoded-micon"><i class="fa fa-tag"></i></span>
+            Category
+        </a>
+    </li> -->
+<?php if ($role === 'admin' || $role === 'hr') : ?>
+
+     <li class="pcoded-hasmenu">
+    <a href="javascript:void(0)">
+       <span class="pcoded-micon"><i class="ti-folder"></i></span>
+
+        <span class="pcoded-mtext">Sub Category</span>
+    </a>
+    <ul class="pcoded-submenu">
+        <li>
+            <a href="<?php echo BASE_URL; ?>modules/sub_category/index.php">
+                <span class="pcoded-mtext">All Sub Category</span>
+            </a>
+        </li>
+        <li>
+            <a href="<?php echo BASE_URL; ?>modules/sub_category/add.php">
+                <span class="pcoded-mtext">Add Sub Category</span>
+            </a>
+        </li>
+    </ul>
+</li>
+
+
+
+    <!-- <li>
+        <a href="<?php echo BASE_URL; ?>modules/sub_category/index.php">
+            <span class="pcoded-micon"><i class="fa fa-tags"></i></span>
+            Sub Category
+        </a>
+    </li> -->
+<?php endif; ?>
+
+
+
+
+<?php if ($role == 'admin' || $role == 'hr') { ?>
+<li class="pcoded-hasmenu">
+    <a href="javascript:void(0)">
+        <span class="pcoded-micon"><i class="ti-briefcase"></i></span>
+        <span class="pcoded-mtext">Supplier</span>
+    </a>
+    <ul class="pcoded-submenu">
+        <li>
+            <a href="<?php echo BASE_URL; ?>modules/suppliers/index.php">
+                <span class="pcoded-mtext">All Suppliers</span>
+            </a>
+        </li>
+        <li>
+            <a href="<?php echo BASE_URL; ?>modules/suppliers/add.php">
+                <span class="pcoded-mtext">Add Supplier</span>
+            </a>
+        </li>
+    </ul>
+</li>
+<?php } ?>
+
+
+
+            
+            
+            
+           
 
             <?php if ($role == 'admin' || $role == 'hr') { ?>
             <li><a href="<?php echo BASE_URL; ?>modules/product/index.php"><span class="pcoded-micon"><i class="ti-package"></i></span>Product</a></li>
