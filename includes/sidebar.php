@@ -155,12 +155,37 @@ $username = $_SESSION['name'] ?? 'User';
            
 
             <?php if ($role == 'admin' || $role == 'hr') { ?>
-            <li><a href="<?php echo BASE_URL; ?>modules/product/index.php"><span class="pcoded-micon"><i class="ti-package"></i></span>Product</a></li>
+            <!-- <li><a href="<?php echo BASE_URL; ?>modules/product/index.php"><span class="pcoded-micon"><i class="ti-package"></i></span>Product</a></li> -->
+           
+           
+
+
+            <li class="pcoded-hasmenu">
+    <a href="javascript:void(0)">
+        <span class="pcoded-micon"><i class="ti-briefcase"></i></span>
+        <span class="pcoded-mtext">Product</span>
+    </a>
+    <ul class="pcoded-submenu">
+        <li>
+            <a href="<?php echo BASE_URL; ?>modules/product/index.php">
+                <span class="pcoded-mtext">All Products</span>
+            </a>
+        </li>
+        <li>
+            <a href="<?php echo BASE_URL; ?>modules/product/add.php">
+                <span class="pcoded-mtext">Add Product</span>
+            </a>
+        </li>
+    </ul>
+</li>
+
             <?php } ?>
 
-            <?php if ($role == 'admin' || $role == 'hr') { ?>
-            <li><a href="<?php echo BASE_URL; ?>modules/supplier/index.php"><span class="pcoded-micon"><i class="ti-briefcase"></i></span>Supplier</a></li>
-            <?php } ?>
+            
+            
+            
+            
+          
 
             <?php if ($role == 'admin' || $role == 'hr') { ?>
             <li><a href="<?php echo BASE_URL; ?>modules/stock_in/index.php"><span class="pcoded-micon"><i class="ti-import"></i></span>Stock In</a></li>
