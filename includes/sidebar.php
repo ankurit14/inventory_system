@@ -181,6 +181,29 @@ $username = $_SESSION['name'] ?? 'User';
 
             <?php } ?>
 
+
+ <?php if ($role == 'admin' || $role == 'hr') { ?>
+             <li class="pcoded-hasmenu">
+    <a href="javascript:void(0)">
+        <span class="pcoded-micon"><i class="ti-briefcase"></i></span>
+        <span class="pcoded-mtext">Purchse</span>
+    </a>
+    <ul class="pcoded-submenu">
+        <li>
+            <a href="<?php echo BASE_URL; ?>modules/purchase/index.php">
+                <span class="pcoded-mtext">All Purchase</span>
+            </a>
+        </li>
+        <li>
+            <a href="<?php echo BASE_URL; ?>modules/purchase/add.php">
+                <span class="pcoded-mtext">Add Purchase</span>
+            </a>
+        </li>
+    </ul>
+</li>
+
+            <?php } ?>
+
             
             
             

@@ -1,4 +1,6 @@
 <?php
+// ini_set('display_errors', 0);
+// error_reporting(E_ERROR | E_PARSE);
 $DB_HOST = '127.0.0.1';
 $DB_USER = 'root';
 $DB_PASS = ''; // your MySQL password if any
