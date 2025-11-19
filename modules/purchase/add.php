@@ -9,6 +9,8 @@ include('../suppliers/supplier_functions.php');
 include('../category/category_functions.php');
 include('../sub_category/sub_category_functions.php');
 include('../product/product_functions.php');
+
+include('../stock/stock_functions.php');   // ⬅ STOCK FUNCTION ADDED
 include('purchase_functions.php');
 
 $errors = [];
@@ -36,18 +38,37 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
 
     if (empty($errors)) {
 
+        // Insert purchase
         $purchase_id = insert_purchase($supplier_id, $purchase_date, $total_amount, $status);
 
+        // Insert purchase items + Stock Movement
         foreach ($items as $it) {
-            // Skip invalid rows
-            if (!isset($it['qty']) || !isset($it['unit_price']) || !isset($it['total'])) continue;
 
+            // Skip invalid items
+            if (
+                !isset($it['product_id']) ||
+                !isset($it['qty']) ||
+                !isset($it['unit_price']) ||
+                !isset($it['total'])
+            ) continue;
+
+            // Insert purchase item
             insert_purchase_item(
                 $purchase_id,
-                $it['product_id'],
-                $it['qty'],
-                $it['unit_price'],
-                $it['total']
+                intval($it['product_id']),
+                floatval($it['qty']),
+                floatval($it['unit_price']),
+                floatval($it['total'])
+            );
+
+            // Insert stock movement
+            insert_stock(
+                intval($it['product_id']),     // product ID
+                floatval($it['qty']),          // stock_in
+                0,                             // stock_out
+                'purchase',                    // source
+                $purchase_id,                  // ref id
+                'Purchased'                    // note
             );
         }
 
@@ -55,6 +76,7 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
     }
 }
 ?>
+
 
 <style>
 .table td, .table th { padding:6px !important; }
