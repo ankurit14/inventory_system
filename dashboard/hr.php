@@ -172,5 +172,5 @@ include(BASE_PATH . '/includes/sidebar.php');
 </div>
 
                         <?php 
-include __DIR__ . '/../includes/footer.php';
+include(BASE_PATH . '/includes/footer.php');
 ?>

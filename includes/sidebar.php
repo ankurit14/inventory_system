@@ -234,7 +234,7 @@ $username = $_SESSION['name'] ?? 'User';
             
             
 
-             <?php if ($role == 'admin' || $role == 'hr') { ?>
+             <?php if ($role == 'admin' || $role == 'hr' || $role == 'employee') { ?>
              <li class="pcoded-hasmenu">
    <a href="javascript:void(0)">
         <span class="pcoded-micon"><i class="ti-clipboard"></i></span>
@@ -247,7 +247,12 @@ $username = $_SESSION['name'] ?? 'User';
         Request List
     </a>
 </li>
-  
+   <li>
+    <a href="<?php echo BASE_URL; ?>modules/requests/request_add.php">
+        <span class="pcoded-micon"><i class="ti-plus"></i></span>
+        Request Add
+    </a>
+</li>
         
   
     </ul>
@@ -256,25 +261,6 @@ $username = $_SESSION['name'] ?? 'User';
             <?php } ?>
           
       
-
-
-           
-
-            <li>
-    <a href="<?php echo BASE_URL; ?>modules/requests/request_add.php">
-        <span class="pcoded-micon"><i class="ti-plus"></i></span>
-        Request Add
-    </a>
-</li>
-            <li>
-    <a href="<?php echo BASE_URL; ?>modules/requests/request_edit.php">
-        <span class="pcoded-micon"><i class="ti-plus"></i></span>
-        Request Edit
-    </a>
-</li>
-
-
-
 
         </ul>
     </div>
