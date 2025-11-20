@@ -1,11 +1,13 @@
 <?php
 session_start();
+include($_SERVER['DOCUMENT_ROOT'] . '/inventory_system/config/path.php');
 if (!isset($_SESSION['role']) || $_SESSION['role'] !== 'hr') {
     header('Location: ../login.php');
     exit;
 }
-include __DIR__ . '/../includes/header.php';
-include __DIR__ . '/../includes/sidebar.php';
+include(BASE_PATH . '/includes/header.php');
+// include(BASE_PATH . '/includes/users_functions.php');
+include(BASE_PATH . '/includes/sidebar.php');
 ?>
 
 
