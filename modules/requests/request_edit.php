@@ -1,177 +1,292 @@
 <?php
+session_start();
+
 include($_SERVER['DOCUMENT_ROOT'].'/inventory_system/config/path.php');
 include($_SERVER['DOCUMENT_ROOT'].'/inventory_system/config/db.php');
 
 include(BASE_PATH.'/includes/header.php');
 include(BASE_PATH.'/includes/sidebar.php');
 
-if (!isset($_SESSION['role'])) {
-    header("Location: ../login.php");
+// ----------------------
+// VALIDATE REQUEST ID
+// ----------------------
+if (!isset($_GET['id'])) {
+    echo "<script>alert('Invalid Request'); window.location='request_list.php';</script>";
     exit;
 }
 
 $id = intval($_GET['id']);
+$user_id = $_SESSION['user_id'];
 
-// Fetch request
-$req = mysqli_query($conn, "SELECT * FROM product_requests WHERE id=$id");
+// ----------------------
+// FETCH MAIN REQUEST
+// ----------------------
+$req = mysqli_query($conn, "
+    SELECT * FROM product_requests 
+    WHERE id=$id AND request_by=$user_id
+");
+
 $request = mysqli_fetch_assoc($req);
 
 if (!$request) {
-    die("Invalid Request ID");
-}
-
-// If HR/Admin already approved → User cannot edit
-if (in_array($request['status'], ['hr_approved', 'admin_approved', 'declined'])) {
-    echo "<div class='alert alert-danger mt-3'>You cannot edit this request because approval already started.</div>";
-    include(BASE_PATH.'/includes/footer.php');
+    echo "<script>alert('Request not found'); window.location='request_list.php';</script>";
     exit;
 }
 
-// Fetch request items
+// ----------------------
+// ALLOW EDIT ONLY IF STATUS = pending
+// ----------------------
+if ($request['status'] != 'pending') {
+    echo "<script>alert('You can edit only PENDING requests'); window.location='request_list.php';</script>";
+    exit;
+}
+
+// ----------------------
+// FETCH REQUEST ITEMS
+// ----------------------
 $items = mysqli_query($conn, "
-    SELECT pri.*, p.name AS product_name, p.unit, p.stock 
+    SELECT pri.*, 
+           c.name AS category_name,
+           sc.name AS subcategory_name,
+           p.name AS product_name
     FROM product_request_items pri
+    LEFT JOIN category c ON pri.category_id = c.id
+    LEFT JOIN sub_category sc ON pri.sub_category_id = sc.id
     LEFT JOIN products p ON pri.product_id = p.id
     WHERE pri.request_id = $id
 ");
 
-// Fetch product list
-$products = mysqli_query($conn, "SELECT id, name, stock FROM products ORDER BY name ASC");
+// ----------------------
+// UPDATE REQUEST
+// ----------------------
+if (isset($_POST['update_request'])) {
 
+    $remarks = mysqli_real_escape_string($conn, $_POST['remarks']);
+
+    // Update main request
+    mysqli_query($conn, "
+        UPDATE product_requests 
+        SET remarks='$remarks'
+        WHERE id=$id
+    ");
+
+    // Delete old items
+    mysqli_query($conn, "DELETE FROM product_request_items WHERE request_id=$id");
+
+    // Insert updated items
+    if (!empty($_POST['product_id'])) {
+
+        foreach ($_POST['product_id'] as $index => $product_id) {
+
+            if ($product_id == "" || $_POST['qty'][$index] == "") continue;
+
+            $category_id     = intval($_POST['category_id'][$index]);
+            $sub_category_id = intval($_POST['sub_category_id'][$index]);
+            $product_id      = intval($product_id);
+            $qty             = intval($_POST['qty'][$index]);
+
+            // Fetch product unit
+            $u = mysqli_query($conn, "SELECT unit FROM products WHERE id=$product_id");
+            $u_row = mysqli_fetch_assoc($u);
+            $unit = $u_row ? $u_row['unit'] : '';
+
+            // Insert new item
+            mysqli_query($conn, "
+                INSERT INTO product_request_items 
+                (request_id, category_id, sub_category_id, product_id, unit, qty_requested)
+                VALUES
+                ($id, $category_id, $sub_category_id, $product_id, '$unit', $qty)
+            ");
+        }
+    }
+
+    echo "<script>alert('Request Updated Successfully!'); window.location='request_list.php';</script>";
+    exit;
+}
 ?>
+
 <div class="pcoded-content">
-<div class="container mt-4">
-    <h3>Edit Request</h3>
+<div class="card">
+    <div class="card-header">
+        <h4>Edit Product Request</h4>
+    </div>
 
-    <form method="post">
+    <div class="card-body">
+        <form method="post">
 
-        <table class="table table-bordered" id="productTable">
-            <thead>
+            <!-- USER INFO -->
+            <div class="mb-3">
+                <label><b>Requested By:</b></label>
+                <input type="text" class="form-control" value="<?= $_SESSION['name']; ?>" readonly>
+            </div>
+
+            <!-- REMARKS -->
+            <div class="mb-3">
+                <label>Remarks / Reason</label>
+                <textarea name="remarks" class="form-control" required><?= $request['remarks']; ?></textarea>
+            </div>
+
+            <hr>
+
+            <h5>Edit Products</h5>
+
+            <table class="table table-bordered" id="itemTable">
+                <thead>
                 <tr>
-                    <th>Product</th>
-                    <th>Stock</th>
-                    <th>Qty</th>
-                    <th>Action</th>
+                    <th width="20%">Category</th>
+                    <th width="20%">Sub Category</th>
+                    <th width="30%">Product</th>
+                    <th width="15%">Qty</th>
+                    <th width="15%">Action</th>
                 </tr>
-            </thead>
+                </thead>
 
-            <tbody>
+                <tbody>
+
                 <?php while ($row = mysqli_fetch_assoc($items)): ?>
-                <tr>
-                    <td>
-                        <select name="product_id[]" class="form-control" required>
-                            <option value="">-- Select Product --</option>
-                            <?php
-                            $pRes = mysqli_query($conn, "SELECT * FROM products ORDER BY name ASC");
-                            while ($p = mysqli_fetch_assoc($pRes)): ?>
-                                <option value="<?= $p['id'] ?>"
-                                    <?= ($p['id'] == $row['product_id']) ? 'selected' : '' ?>>
-                                    <?= $p['name'] ?>
-                                </option>
-                            <?php endwhile; ?>
-                        </select>
-                    </td>
+                    <tr>
 
-                    <td>
-                        <input type="text" class="form-control stockBox" value="<?= $row['stock'] ?>" readonly>
-                    </td>
+                        <!-- CATEGORY -->
+                        <td>
+                            <select class="form-control category" name="category_id[]" required>
+                                <option value="">Select</option>
+                                <?php
+                                $cat = mysqli_query($conn, "SELECT id,name FROM category WHERE status='active'");
+                                while ($c = mysqli_fetch_assoc($cat)):
+                                ?>
+                                    <option value="<?= $c['id'] ?>" <?= ($c['id'] == $row['category_id']) ? "selected" : "" ?>>
+                                        <?= $c['name'] ?>
+                                    </option>
+                                <?php endwhile; ?>
+                            </select>
+                        </td>
 
-                    <td>
-                        <input type="number" name="qty[]" class="form-control qtyBox"
-                               value="<?= $row['qty_requested'] ?>" min="0.01" step="0.1" required>
-                    </td>
+                        <!-- SUBCATEGORY -->
+                        <td>
+                            <select class="form-control subcategory" name="sub_category_id[]" required>
+                                <option value="<?= $row['sub_category_id']; ?>"><?= $row['subcategory_name']; ?></option>
+                            </select>
+                        </td>
 
-                    <td>
-                        <button type="button" class="btn btn-danger removeRow">X</button>
-                    </td>
-                </tr>
+                        <!-- PRODUCT -->
+                        <td>
+                            <select class="form-control product" name="product_id[]" required>
+                                <option value="<?= $row['product_id']; ?>"><?= $row['product_name']; ?></option>
+                            </select>
+                        </td>
+
+                        <!-- QTY -->
+                        <td>
+                            <input type="number" name="qty[]" class="form-control"
+                                   value="<?= $row['qty_requested']; ?>" min="1" required>
+                        </td>
+
+                        <td>
+                            <button type="button" class="btn btn-danger btn-sm removeRow">X</button>
+                        </td>
+
+                    </tr>
                 <?php endwhile; ?>
-            </tbody>
-        </table>
 
-        <button type="button" class="btn btn-primary" id="addRow">+ Add Item</button>
+                </tbody>
+            </table>
 
-        <div class="mb-3 mt-3">
-            <label>Reason</label>
-            <textarea name="reason" class="form-control" required><?= $request['reason'] ?></textarea>
-        </div>
+            <button type="button" class="btn btn-primary" id="addRow">+ Add More</button>
+            <br><br>
 
-        <button class="btn btn-success" name="update">Update Request</button>
-    </form>
-
+            <button type="submit" name="update_request" class="btn btn-success">Update Request</button>
+        </form>
+    </div>
 </div>
 </div>
+
+<?php include(BASE_PATH.'/includes/footer.php'); ?>
 
 <script>
-document.getElementById('addRow').addEventListener('click', function () {
-    let html = `
+// ---------------------------
+// ADD NEW ROW
+// ---------------------------
+$("#addRow").click(function () {
+    let row = `
         <tr>
             <td>
-                <select name="product_id[]" class="form-control productSelect" required>
-                    <option value="">-- Select Product --</option>
+                <select class="form-control category" name="category_id[]" required>
+                    <option value="">Select</option>
                     <?php
-                    mysqli_data_seek($products, 0);
-                    while ($p = mysqli_fetch_assoc($products)): ?>
-                        <option value="<?= $p['id'] ?>"><?= $p['name'] ?></option>
+                    $cat = mysqli_query($conn, "SELECT id,name FROM category WHERE status='active'");
+                    while ($c = mysqli_fetch_assoc($cat)):
+                    ?>
+                        <option value="<?= $c['id'] ?>"><?= $c['name'] ?></option>
                     <?php endwhile; ?>
                 </select>
             </td>
 
             <td>
-                <input type="text" class="form-control stockBox" value="0" readonly>
+                <select class="form-control subcategory" name="sub_category_id[]" required>
+                    <option value="">Select Category First</option>
+                </select>
             </td>
 
             <td>
-                <input type="number" name="qty[]" class="form-control qtyBox" min="0.01" step="0.1" required>
+                <select class="form-control product" name="product_id[]" required>
+                    <option value="">Select Subcategory First</option>
+                </select>
             </td>
 
             <td>
-                <button type="button" class="btn btn-danger removeRow">X</button>
+                <input type="number" name="qty[]" class="form-control" min="1" required>
+            </td>
+
+            <td>
+                <button type="button" class="btn btn-danger btn-sm removeRow">X</button>
             </td>
         </tr>
     `;
 
-    document.querySelector("#productTable tbody").insertAdjacentHTML('beforeend', html);
+    $("#itemTable tbody").append(row);
 });
 
-document.addEventListener('click', function(e){
-    if (e.target.classList.contains('removeRow')) {
-        e.target.closest("tr").remove();
-    }
+// ---------------------------
+// REMOVE ROW
+// ---------------------------
+$(document).on("click", ".removeRow", function () {
+    $(this).closest("tr").remove();
+});
+
+// ---------------------------
+// LOAD SUBCATEGORIES
+// ---------------------------
+$(document).on("change", ".category", function () {
+
+    let category_id = $(this).val();
+    let row = $(this).closest("tr");
+
+    $.ajax({
+        url: "ajax_get_subcategories.php",
+        type: "POST",
+        data: { category_id: category_id },
+        success: function (data) {
+            row.find(".subcategory").html(data);
+            row.find(".product").html("<option value=''>Select Subcategory First</option>");
+        }
+    });
+});
+
+// ---------------------------
+// LOAD PRODUCTS
+// ---------------------------
+$(document).on("change", ".subcategory", function () {
+
+    let sub_category_id = $(this).val();
+    let row = $(this).closest("tr");
+
+    $.ajax({
+        url: "ajax_get_products.php",
+        type: "POST",
+        data: { sub_category_id: sub_category_id },
+        success: function (data) {
+            row.find(".product").html(data);
+        }
+    });
 });
 </script>
-
-<?php
-/* -------------------------------
-    UPDATE REQUEST (POST)
--------------------------------- */
-if (isset($_POST['update'])) {
-
-    // Basic request update
-    mysqli_query($conn, "
-        UPDATE product_requests 
-        SET reason='".mysqli_real_escape_string($conn, $_POST['reason'])."', 
-            status='pending'
-        WHERE id=$id
-    ");
-
-    // Delete previous items
-    mysqli_query($conn, "DELETE FROM product_request_items WHERE request_id=$id");
-
-    // Insert new items
-    foreach ($_POST['product_id'] as $index => $pid) {
-
-        $qty = floatval($_POST['qty'][$index]);
-        $pid = intval($pid);
-
-        mysqli_query($conn, "
-            INSERT INTO product_request_items(request_id, product_id, qty_requested, status)
-            VALUES ('$id', '$pid', '$qty', 'pending')
-        ");
-    }
-
-    echo "<script>alert('Request Updated Successfully');window.location='request_view.php?id=$id';</script>";
-}
-
-include(BASE_PATH.'/includes/footer.php');
-?>
