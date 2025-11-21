@@ -18,7 +18,7 @@ $username = $_SESSION['name'] ?? 'User';
 
         <div class="">
             <div class="main-menu-header">
-                <img class="img-80 img-radius" src="<?php echo BASE_URL; ?>assets/images/avatar-4.jpg" alt="User">
+                <!-- <img class="img-80 img-radius" src="<?php echo BASE_URL; ?>assets/images/avatar-4.jpg" alt="User"> -->
                 <div class="user-details">
                     <span id="more-details"><?php echo htmlspecialchars($username); ?></span>
                 </div>
