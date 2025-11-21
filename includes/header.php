@@ -2,6 +2,12 @@
 if (session_status() === PHP_SESSION_NONE) {
     session_start();
 }
+if (isset($_SESSION['locked']) && $_SESSION['locked'] === true) {
+    header("Location: " . BASE_URL . "lock-screen.php");
+    exit;
+}
+$role = $_SESSION['role'];
+$username = $_SESSION['name'] ?? 'User';
 // define('BASE_URL', '/inventory_system/');
 ?>
 
@@ -142,82 +148,49 @@ if (session_status() === PHP_SESSION_NONE) {
                           </li>
                       </ul>
                       <ul class="nav-right">
-                          <li class="header-notification">
-                              <a href="#!" class="waves-effect waves-light">
-                                  <i class="ti-bell"></i>
-                                  <span class="badge bg-c-red"></span>
-                              </a>
-                              <ul class="show-notification">
-                                  <li>
-                                      <h6>Notifications</h6>
-                                      <label class="label label-danger">New</label>
-                                  </li>
-                                  <li class="waves-effect waves-light">
-                                      <div class="media">
-                                          <img class="d-flex align-self-center img-radius" src="<?php echo BASE_URL; ?>assets/images/avatar-2.jpg" alt="Generic placeholder image">
-                                          <div class="media-body">
-                                              <h5 class="notification-user">John Doe</h5>
-                                              <p class="notification-msg">Lorem ipsum dolor sit amet, consectetuer elit.</p>
-                                              <span class="notification-time">30 minutes ago</span>
-                                          </div>
-                                      </div>
-                                  </li>
-                                  <li class="waves-effect waves-light">
-                                      <div class="media">
-                                          <img class="d-flex align-self-center img-radius" src="<?php echo BASE_URL; ?>assets/images/avatar-4.jpg" alt="Generic placeholder image">
-                                          <div class="media-body">
-                                              <h5 class="notification-user">Joseph William</h5>
-                                              <p class="notification-msg">Lorem ipsum dolor sit amet, consectetuer elit.</p>
-                                              <span class="notification-time">30 minutes ago</span>
-                                          </div>
-                                      </div>
-                                  </li>
-                                  <li class="waves-effect waves-light">
-                                      <div class="media">
-                                          <img class="d-flex align-self-center img-radius" src="<?php echo BASE_URL; ?>assets/images/avatar-3.jpg" alt="Generic placeholder image">
-                                          <div class="media-body">
-                                              <h5 class="notification-user">Sara Soudein</h5>
-                                              <p class="notification-msg">Lorem ipsum dolor sit amet, consectetuer elit.</p>
-                                              <span class="notification-time">30 minutes ago</span>
-                                          </div>
-                                      </div>
-                                  </li>
-                              </ul>
-                          </li>
-                          <li class="user-profile header-notification">
-                              <a href="#!" class="waves-effect waves-light">
-                                  <img src="<?php echo BASE_URL; ?>assets/images/avatar-4.jpg" class="img-radius" alt="User-Profile-Image">
-                                  <span>John Doe</span>
-                                  <i class="ti-angle-down"></i>
-                              </a>
-                              <ul class="show-notification profile-notification">
-                                  <li class="waves-effect waves-light">
-                                      <a href="#!">
-                                          <i class="ti-settings"></i> Settings
-                                      </a>
-                                  </li>
-                                  <li class="waves-effect waves-light">
-                                      <a href="user-profile.html">
-                                          <i class="ti-user"></i> Profile
-                                      </a>
-                                  </li>
-                                  <li class="waves-effect waves-light">
-                                      <a href="email-inbox.html">
-                                          <i class="ti-email"></i> My Messages
-                                      </a>
-                                  </li>
-                                  <li class="waves-effect waves-light">
-                                      <a href="auth-lock-screen.html">
-                                          <i class="ti-lock"></i> Lock Screen
-                                      </a>
-                                  </li>
-                                  <li class="waves-effect waves-light">
-                                      <a href="<?php echo BASE_URL; ?>logout.php">
-                                          <i class="ti-layout-sidebar-left"></i> Logout
-                                      </a>
-                                  </li>
-                              </ul>
-                          </li>
+                         
+                         <li class="user-profile header-notification">
+    <a href="#!" class="waves-effect waves-light">
+        <span id="more-details"><?php echo htmlspecialchars($username); ?></span>
+        <i class="ti-angle-down"></i>
+    </a>
+
+    <ul class="show-notification profile-notification">
+
+        <!-- SETTINGS → Update Password Page -->
+        <li class="waves-effect waves-light">
+            <a href="<?php echo BASE_URL; ?>/modules/users/user_password_update.php">
+                <i class="ti-settings"></i> Change Password
+            </a>
+        </li>
+
+        <!-- PROFILE → View/Edit Profile -->
+        <li class="waves-effect waves-light">
+            <a href="<?php echo BASE_URL; ?>/modules/users/user_profile.php">
+                <i class="ti-user"></i> My Profile
+            </a>
+        </li>
+
+        <!-- LOCK SCREEN (Optional) -->
+        <li class="waves-effect waves-light">
+            <a href="<?php echo BASE_URL; ?>/lock-screen.php">
+                <i class="ti-lock"></i> Lock Screen
+            </a>
+        </li>
+
+        <!-- LOGOUT -->
+        <li class="waves-effect waves-light">
+            <a href="<?php echo BASE_URL; ?>logout.php">
+                <i class="ti-layout-sidebar-left"></i> Logout
+            </a>
+        </li>
+    </ul>
+</li>
+
+
+
+
+
                       </ul>
                   </div>
               </div>

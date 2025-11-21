@@ -1,6 +1,35 @@
 <?php
 include_once($_SERVER['DOCUMENT_ROOT'] . '/inventory_system/config/db.php');
 
+
+function get_user_by_id($id) {
+    global $conn;
+    $sql = "SELECT * FROM users WHERE id = $id LIMIT 1";
+    return mysqli_fetch_assoc(mysqli_query($conn, $sql));
+}
+function update_user_profile($id, $data) {
+    global $conn;
+
+    $name = mysqli_real_escape_string($conn, $data['name']);
+    $email = mysqli_real_escape_string($conn, $data['email']);
+    $contact_no = mysqli_real_escape_string($conn, $data['contact_no']);
+    $address = mysqli_real_escape_string($conn, $data['address']);
+    $department = mysqli_real_escape_string($conn, $data['department']);
+    $designation = mysqli_real_escape_string($conn, $data['designation']);
+
+    $sql = "
+        UPDATE users SET 
+            name='$name',
+            email='$email',
+            contact_no='$contact_no',
+            address='$address',
+            department='$department',
+            designation='$designation'
+        WHERE id=$id
+    ";
+
+    return mysqli_query($conn, $sql);
+}
 /*-------------------------
   Fetch all users
 --------------------------*/
