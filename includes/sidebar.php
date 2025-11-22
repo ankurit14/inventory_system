@@ -28,13 +28,28 @@ $username = $_SESSION['name'] ?? 'User';
         <div class="pcoded-navigation-label">Layout</div>
 
         <ul class="pcoded-item pcoded-left-item">
+<?php
+           if (isset($_SESSION['role'])) {
+    if ($_SESSION['role'] == 'admin') {
+        $dashboard_url = BASE_URL . 'dashboard/admin.php';
+    } elseif ($_SESSION['role'] == 'hr') {
+        $dashboard_url = BASE_URL . 'dashboard/hr.php';
+    } elseif ($_SESSION['role'] == 'employee') {
+        $dashboard_url = BASE_URL . 'dashboard/employee.php';
+    } else {
+        $dashboard_url = BASE_URL . 'login.php';
+    }
+} else {
+    $dashboard_url = BASE_URL . 'login.php';
+}
+?>
 
-            <li class="active">
-                <a href="<?php echo BASE_URL; ?>index.php" class="waves-effect waves-dark">
-                    <span class="pcoded-micon"><i class="ti-home"></i></span>
-                    <span class="pcoded-mtext">Dashboard</span>
-                </a>
-            </li>
+<li class="active">
+    <a href="<?= $dashboard_url ?>" class="waves-effect waves-dark">
+        <span class="pcoded-micon"><i class="ti-home"></i></span>
+        <span class="pcoded-mtext">Dashboard</span>
+    </a>
+</li>
 
             <?php if ($role == 'admin' || $role == 'hr') { ?>
 

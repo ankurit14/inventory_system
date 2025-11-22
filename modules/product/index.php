@@ -24,7 +24,7 @@ $current_role = $_SESSION['role'] ?? 'user';
 }
 
 .header-box {
-    background-color: #1f2937;
+    background: linear-gradient(135deg, #4e73df, #1cc88a);
     padding: 15px 20px;
     border-radius: 8px;
     display: flex;

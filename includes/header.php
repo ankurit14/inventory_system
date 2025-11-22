@@ -2,12 +2,14 @@
 if (session_status() === PHP_SESSION_NONE) {
     session_start();
 }
+
+$role = $_SESSION['role'];
+$username = $_SESSION['name'] ?? 'User';
+
 if (isset($_SESSION['locked']) && $_SESSION['locked'] === true) {
     header("Location: " . BASE_URL . "lock-screen.php");
     exit;
 }
-$role = $_SESSION['role'];
-$username = $_SESSION['name'] ?? 'User';
 // define('BASE_URL', '/inventory_system/');
 ?>
 

@@ -73,6 +73,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
         <h2>My Profile</h2>
         <p class="text-muted">Update your personal information</p>
     </div>
+    
 
     <div class="form-container">
 

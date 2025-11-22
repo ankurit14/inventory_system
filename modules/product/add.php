@@ -33,8 +33,92 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 }
 ?>
 
+<style>
+.header-box {
+    background: linear-gradient(135deg, #4e73df, #1cc88a);
+    padding: 15px 20px;
+    border-radius: 8px;
+    align-items: center;
+    margin-bottom: 20px;
+}
+.header-box h2 {
+    color: #fff;
+    margin: 0;
+    font-size: 24px;
+    font-weight: 600;
+    text-align: center;
+}
+
+.header-box h5 {
+    color: #fff;
+    margin: 0;
+    font-size: 20px;
+    font-weight: 200;
+}
+.header-box a.btn {
+    color: #1f2937;
+    background-color: #fff;
+    padding: 6px 15px;
+    border-radius: 6px;
+    text-decoration: none;
+}
+
+.filter-container input, .filter-container select {
+    padding: 6px 10px;
+    font-size: 14px;
+    border-radius: 6px;
+    border: 1px solid #ccc;
+}
+
+.table thead th {
+    background: #2d6cdf;
+    color: #fff;
+    font-size: 14px;
+}
+.table tbody td {
+    font-size: 14px;
+    padding: 6px 10px;
+}
+.table tbody tr:hover {
+    background: #f1f5ff;
+}
+
+.btn-sm {
+    padding: 3px 7px;
+    font-size: 13px;
+}
+.status-btn {
+    min-width: 80px;
+}
+.table thead th {
+    background: #2d6cdf;
+    color: white;
+    font-size: 14px;
+    padding: 4px 6px !important;
+    height: 30px !important;
+    line-height: 14px;
+}
+.page-header-bg {
+    position: absolute;
+    top: 5px;
+    left: 0;
+    width: 100%;
+    height: 50%;
+    background: linear-gradient(135deg, #4e73df, #1cc88a);
+    z-index: 1;
+    border-radius: 8px;
+}
+
+</style>
 <div class="pcoded-content">
-    <h3 class="text-center my-3">Add Product</h3>
+
+ <div class="header-box">
+    <h2 style="color: #ffffff; margin: 0;">
+        Add Product
+    </h2>
+</div>
+
+    <!-- <h3 class="text-center my-3">Add Product</h3> -->
     <div class="card p-4" style="max-width:700px; margin:auto;">
 
         <?php if(isset($errors['form'])): ?>
