@@ -11,7 +11,7 @@ $current_role = $_SESSION['role']; // login user role
 <style>
 /* Header */
 .header-box {
-    background-color: #1f2937;
+    background: linear-gradient(135deg, #4e73df, #1cc88a);
     padding: 15px 20px;
     border-radius: 8px;
     display: flex;
@@ -74,11 +74,27 @@ $current_role = $_SESSION['role']; // login user role
 
 <div class="pcoded-content">
 
+
+
+ <div class="header-box">
+        <h2>User List</h2>
+        <a href="add.php" class="btn btn-light shadow-sm">+ Add User</a>
+    </div>
+
+
+<!--  -->
+
+
+
+
+
+    
+
     <!-- Header Row -->
-    <div class="header-box">
+    <!-- <div class="header-box">
         <h2>User List</h2>
         <a href="add.php" class="btn btn-light btn-lg shadow-sm">+ Add User</a>
-    </div>
+    </div> -->
 
     <!-- Filter -->
     <div class="filter-container row g-2 mb-3">
