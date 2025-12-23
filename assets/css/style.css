@@ -10238,40 +10238,6 @@ body.menu-bottom #collapse-menu {
 /**  =====================
       Select-2 css start
 ==========================  **/
-.select2-container--default:focus {
-  border-color: #448aff; }
-.select2-container--default.select2-container--open .select2-selection--single .select2-selection__arrow b {
-  border-color: transparent transparent #fff transparent; }
-.select2-container--default .select2-search__field:focus {
-  border: 1px solid #448aff; }
-.select2-container--default .select2-results__option--highlighted[aria-selected] {
-  background-color: #448aff; }
-.select2-container--default .select2-selection--multiple {
-  padding: 3px; }
-  .select2-container--default .select2-selection--multiple .select2-selection__choice {
-    background-color: #448aff;
-    border: 1px solid #448aff;
-    padding: 5px 15px;
-    color: #fff; }
-    .select2-container--default .select2-selection--multiple .select2-selection__choice span {
-      color: #fff; }
-  .select2-container--default .select2-selection--multiple .select2-search__field {
-    border: none; }
-.select2-container--default.select2-container--focus .select2-selection--multiple {
-  border: 1px solid #448aff; }
-.select2-container--default .select2-selection--single {
-  color: #fff;
-  height: auto; }
-  .select2-container--default .select2-selection--single .select2-selection__rendered {
-    background-color: #448aff;
-    color: #fff;
-    padding: 8px 30px 8px 20px; }
-  .select2-container--default .select2-selection--single .select2-selection__arrow {
-    top: 10px;
-    right: 15px; }
-    .select2-container--default .select2-selection--single .select2-selection__arrow b {
-      border-color: #fff transparent transparent transparent; }
-
 /*===== Select-2 css ends =====*/
 /**  =====================
       Multi-select css start
@@ -11206,7 +11172,8 @@ td.highlight {
 
 .table.compact td,
 .table.compact th {
-  padding: .45rem; }
+  padding: .45rem;
+ }
 
 .dataTables_paginate .pagination {
   float: right; }

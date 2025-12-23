@@ -1,7 +1,7 @@
 <?php
 session_start();
 
-include($_SERVER['DOCUMENT_ROOT'] . '/inventory_system/config/path.php');
+include_once __DIR__ . '/../../config/path.php';
 include(BASE_PATH . '/includes/header.php');
 include(BASE_PATH . '/includes/users_functions.php');
 include(BASE_PATH . '/includes/sidebar.php');
@@ -29,6 +29,9 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
 
     } elseif (!empty($_POST['contact_no']) && !preg_match("/^[0-9]{10}$/", $_POST['contact_no'])) {
         $error = "Contact number must be exactly 10 digits.";
+    
+    } elseif (!empty($_POST['office_mobile_no']) && !preg_match("/^[0-9]{10}$/", $_POST['office_mobile_no'])) {
+        $error = "Contact number must be exactly 10 digits.";
 
     } elseif (username_exists($_POST['username'], $id)) {
         $error = "This username is already taken.";
@@ -41,6 +44,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
             'username' => $_POST['username'],
             'email' => $_POST['email'],
             'contact_no' => $_POST['contact_no'],
+            'office_mobile_no' => $_POST['office_mobile_no'],
             'address' => $_POST['address'],
             'department' => $_POST['department'],
             'designation' => $_POST['designation'],
@@ -67,9 +71,32 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
 ?>
 
 <style>
-.page-header h2 {
-    font-weight: 600;
+    .header-box {
+    background: linear-gradient(135deg, #4e73df, #1cc88a);
+    padding: 15px 20px;
+    border-radius: 8px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 20px;
+    flex-wrap: wrap;
 }
+.header-box h2 {
+    font-size: 24px;
+    font-weight: 600;
+    color: #fff;
+    margin: 0;
+}
+.header-box a.btn {
+    color: #1f2937;
+    background-color: #fff;
+    font-weight: 500;
+    border-radius: 6px;
+    text-decoration: none;
+    padding: 6px 15px;
+    margin-top: 10px;
+}
+
 .card {
     border-radius: 10px;
     box-shadow: 0 4px 20px rgba(0,0,0,0.08);
@@ -83,9 +110,10 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
 
 <div class="pcoded-content">
 
-    <div class="page-header text-center mt-4 mb-4">
+    <div class="header-box">
         <h2>Edit User</h2>
-        <p class="text-muted">Update user details, role, department, and login credentials.</p>
+        <a href="index.php" class="btn btn-light shadow-sm"><< Back</a>
+        
     </div>
 
     <div class="form-container">
@@ -125,35 +153,44 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
                     </div>
 
                     <div class="row">
-                        <div class="col-md-6 mb-3">
+                        <div class="col-md-4 mb-3">
                             <label class="form-label">Email Address</label>
                             <input type="email" id="email" name="email" class="form-control" 
-                                   value="<?= htmlspecialchars($user['email']) ?>">
+                                   value="<?= htmlspecialchars($user['email'] ?? '') ?>">
                         </div>
 
-                        <div class="col-md-6 mb-3">
+                        <div class="col-md-4 mb-3">
                             <label class="form-label">Contact Number</label>
                             <input type="text" id="contact_no" name="contact_no" maxlength="10" 
-                                   class="form-control" value="<?= htmlspecialchars($user['contact_no']) ?>">
+                                   class="form-control" value="<?= htmlspecialchars($user['contact_no'] ?? '') ?>">
                         </div>
+
+                           <div class="col-md-4 mb-3">
+        <label class="form-label">Office Mobile No</label>
+        <input type="text" id="office_mobile_no" name="office_mobile_no" maxlength="10"
+               class="form-control" value="<?= htmlspecialchars($user['office_mobile_no'] ?? '') ?>">
+    </div>
+
+
+
                     </div>
 
                     <div class="mb-3">
                         <label class="form-label">Address</label>
-                        <textarea name="address" class="form-control" rows="2"><?= htmlspecialchars($user['address']) ?></textarea>
+                        <textarea name="address" class="form-control" rows="2"><?= htmlspecialchars($user['address'] ?? '') ?></textarea>
                     </div>
 
                     <div class="row">
                         <div class="col-md-6 mb-3">
                             <label class="form-label">Department</label>
                             <input type="text" id="department" name="department" class="form-control" 
-                                   value="<?= htmlspecialchars($user['department']) ?>">
+                                   value="<?= htmlspecialchars($user['department'] ?? '') ?>">
                         </div>
 
                         <div class="col-md-6 mb-3">
                             <label class="form-label">Designation</label>
                             <input type="text" id="designation" name="designation" class="form-control" 
-                                   value="<?= htmlspecialchars($user['designation']) ?>">
+                                   value="<?= htmlspecialchars($user['designation'] ?? '') ?>">
                         </div>
                     </div>
 
@@ -198,6 +235,10 @@ document.addEventListener("DOMContentLoaded", () => {
     });
 
     document.getElementById("contact_no").addEventListener("input", function () {
+        this.value = this.value.replace(/[^0-9]/g, "").substring(0, 10);
+    });
+    
+    document.getElementById("office_mobile_no").addEventListener("input", function () {
         this.value = this.value.replace(/[^0-9]/g, "").substring(0, 10);
     });
 

@@ -1,6 +1,6 @@
 <?php
 session_start();
-include($_SERVER['DOCUMENT_ROOT'].'/inventory_system/config/path.php');
+include_once __DIR__ . '/../../config/path.php';
 include(BASE_PATH.'/includes/header.php');
 include(BASE_PATH.'/includes/sidebar.php');
 include('product_functions.php');
@@ -35,14 +35,26 @@ if($_SERVER['REQUEST_METHOD'] === 'POST') {
     if (empty($_POST['sku'])) $errors['sku'] = "SKU is required!";
     if (empty($_POST['unit'])) $errors['unit'] = "Unit is required!";
 
-    if(empty($errors)){
-        if(update_product($id, $_POST)){
-            $success = "Product updated successfully!";
-            $old = $_POST;
-        } else {
-            $errors['form'] = "Something went wrong!";
-        }
+    
+    
+   if (empty($errors)) {
+    if (update_product($id, $_POST)) {
+        echo "
+        <script>
+            alert('Product updated successfully!');
+            setTimeout(function(){
+                window.location.href = 'index.php';
+            }, 2000);
+        </script>
+        ";
+        exit;
+    } else {
+        $errors['form'] = "Something went wrong!";
     }
+}
+
+
+
 }
 ?>
 

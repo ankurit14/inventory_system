@@ -1,5 +1,5 @@
 <?php
-include($_SERVER['DOCUMENT_ROOT'].'/inventory_system/config/db.php');
+include_once __DIR__ . '/../../config/db.php';
 
 function get_all_categories() {
     global $conn;
@@ -15,6 +15,7 @@ function add_category($data) {
     global $conn;
     $name = mysqli_real_escape_string($conn, $data['name']);
     $status = $data['status'];
+
     return mysqli_query($conn, "INSERT INTO category (name,status) VALUES ('$name','$status')");
 }
 
@@ -31,5 +32,15 @@ function toggle_category_status($id) {
     if(!$res) return false;
     $new = $res['status']=='active'?'inactive':'active';
     return mysqli_query($conn, "UPDATE category SET status='$new' WHERE id=".intval($id));
+}
+
+function category_exists($name) {
+    global $conn;
+    $name = mysqli_real_escape_string($conn, $name);
+
+    $query = "SELECT id FROM category WHERE name = '$name' LIMIT 1";
+    $result = mysqli_query($conn, $query);
+
+    return mysqli_num_rows($result) > 0;
 }
 ?>

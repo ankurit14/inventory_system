@@ -1,8 +1,8 @@
 <?php
 session_start();
 
-include($_SERVER['DOCUMENT_ROOT'] . '/inventory_system/config/path.php');
-include($_SERVER['DOCUMENT_ROOT'] . '/inventory_system/config/db.php');
+include_once __DIR__ . '/../config/path.php';
+include(BASE_PATH.'/config/db.php');
 
 if (!isset($_SESSION['role']) || $_SESSION['role'] !== 'hr') {
     header('Location: ../login.php');
@@ -69,7 +69,7 @@ $today_request_count = mysqli_fetch_assoc($request_res)['total'];
                                     <div class="row align-items-center">
                                         <div class="col-8">
                                             <h4 class="text-c-purple"><?= $supplier_count ?></h4>
-                                            <h6 class="text-muted m-b-0"><a href="http://localhost/inventory_system/modules/suppliers/index.php" style="text-decoration:none;">Total Suppliers</a></h6>
+                                            <h6 class="text-muted m-b-0"><a href="<?php echo BASE_URL; ?>modules/suppliers/index.php" style="text-decoration:none;">Total Suppliers</a></h6>
                                         </div>
                                         <div class="col-4 text-right">
                                             <i class="fa fa-truck f-28"></i>
@@ -79,7 +79,7 @@ $today_request_count = mysqli_fetch_assoc($request_res)['total'];
                                 <div class="card-footer bg-c-purple">
                                     <div class="row align-items-center">
                                         <div class="col-9">
-                                            <p class="text-white m-b-0"><a href="http://localhost/inventory_system/modules/suppliers/index.php" style="text-decoration:none;">All Suppliers</a></p>
+                                            <p class="text-white m-b-0"><a href="<?php echo BASE_URL; ?>modules/suppliers/index.php" style="text-decoration:none;">All Suppliers</a></p>
                                         </div>
                                         <div class="col-3 text-right">
                                             <i class="fa fa-line-chart text-white f-16"></i>
@@ -97,7 +97,7 @@ $today_request_count = mysqli_fetch_assoc($request_res)['total'];
                                     <div class="row align-items-center">
                                         <div class="col-8">
                                             <h4 class="text-c-green"><?= $employee_count ?></h4>
-                                            <h6 class="text-muted m-b-0"><a href="http://localhost/inventory_system/modules/users/index.php" style="text-decoration:none;">Total Employees</a></h6>
+                                            <h6 class="text-muted m-b-0"><a href="<?php echo BASE_URL; ?>modules/users/index.php" style="text-decoration:none;">Total Employees</a></h6>
                                         </div>
                                         <div class="col-4 text-right">
                                             <i class="fa fa-users f-28"></i>
@@ -107,7 +107,7 @@ $today_request_count = mysqli_fetch_assoc($request_res)['total'];
                                 <div class="card-footer bg-c-green">
                                     <div class="row align-items-center">
                                         <div class="col-9">
-                                            <p class="text-white m-b-0"><a href="http://localhost/inventory_system/modules/users/index.php" style="text-decoration:none;">All Employees</a></p>
+                                            <p class="text-white m-b-0"><a href="<?php echo BASE_URL; ?>modules/users/index.php" style="text-decoration:none;">All Employees</a></p>
                                         </div>
                                         <div class="col-3 text-right">
                                             <i class="fa fa-line-chart text-white f-16"></i>
@@ -126,7 +126,7 @@ $today_request_count = mysqli_fetch_assoc($request_res)['total'];
                                     <div class="row align-items-center">
                                         <div class="col-8">
                                             <h4 class="text-c-red"><?= $product_count ?></h4>
-                                            <h6 class="text-muted m-b-0"><a href="http://localhost/inventory_system/modules/product/index.php" style="text-decoration:none;">Total Products</a></h6>
+                                            <h6 class="text-muted m-b-0"><a href="<?php echo BASE_URL; ?>modules/product/index.php" style="text-decoration:none;">Total Products</a></h6>
                                         </div>
                                         <div class="col-4 text-right">
                                             <i class="fa fa-cube f-28"></i>
@@ -136,7 +136,7 @@ $today_request_count = mysqli_fetch_assoc($request_res)['total'];
                                 <div class="card-footer bg-c-red">
                                     <div class="row align-items-center">
                                         <div class="col-9">
-                                            <p class="text-white m-b-0"><a href="http://localhost/inventory_system/modules/product/index.php" style="text-decoration:none;">All Products</a></p>
+                                            <p class="text-white m-b-0"><a href="<?php echo BASE_URL; ?>modules/product/index.php" style="text-decoration:none;">All Products</a></p>
                                         </div>
                                         <div class="col-3 text-right">
                                             <i class="fa fa-line-chart text-white f-16"></i>
@@ -153,7 +153,7 @@ $today_request_count = mysqli_fetch_assoc($request_res)['total'];
                                     <div class="row align-items-center">
                                         <div class="col-8">
                                             <h4 class="text-c-blue"><?= $today_request_count ?></h4>
-                                            <h6 class="text-muted m-b-0"><a href="http://localhost/inventory_system/modules/requests/request_list.php?filter=today" style="text-decoration:none;">Today's Requests</a></h6>
+                                            <h6 class="text-muted m-b-0"><a href="<?php echo BASE_URL; ?>modules/requests/request_list.php?filter=today" style="text-decoration:none;">Today's Requests</a></h6>
                                         </div>
                                         <div class="col-4 text-right">
                                             <i class="fa fa-list f-28"></i>
@@ -163,7 +163,7 @@ $today_request_count = mysqli_fetch_assoc($request_res)['total'];
                                 <div class="card-footer bg-c-blue">
                                     <div class="row align-items-center">
                                         <div class="col-9">
-                                            <p class="text-white m-b-0"><a href="http://localhost/inventory_system/modules/requests/request_list.php?filter=today" style="text-decoration:none;">Requests Today</a></a></p>
+                                            <p class="text-white m-b-0"><a href="<?php echo BASE_URL; ?>modules/requests/request_list.php?filter=today" style="text-decoration:none;">Requests Today</a></a></p>
                                         </div>
                                         <div class="col-3 text-right">
                                             <i class="fa fa-line-chart text-white f-16"></i>

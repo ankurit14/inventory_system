@@ -1,11 +1,10 @@
-  
-                </div>
-            </div>
-        </div>
-    </div>
-    <!-- Warning Section Starts -->
-    <!-- Older IE warning message -->
-    <!--[if lt IE 10]>
+  </div>
+  </div>
+  </div>
+  </div>
+  <!-- Warning Section Starts -->
+  <!-- Older IE warning message -->
+  <!--[if lt IE 10]>
     <div class="ie-warning">
         <h1>Warning!!</h1>
         <p>You are using an outdated version of Internet Explorer, please upgrade <br/>to any of the following web browsers to access this website.</p>
@@ -46,48 +45,53 @@
         <p>Sorry for the inconvenience!</p>
     </div>
     <![endif]-->
-    <!-- Warning Section Ends -->
-    
-    <!-- Required Jquery -->
-   <!-- Local JS Assets -->
-<script type="text/javascript" src="<?php echo BASE_URL; ?>assets/js/jquery/jquery.min.js"></script>
-<script type="text/javascript" src="<?php echo BASE_URL; ?>assets/js/jquery-ui/jquery-ui.min.js"></script>
-<script type="text/javascript" src="<?php echo BASE_URL; ?>assets/js/popper.js/popper.min.js"></script>
-<script type="text/javascript" src="<?php echo BASE_URL; ?>assets/js/bootstrap/js/bootstrap.min.js"></script>
-<script type="text/javascript" src="<?php echo BASE_URL; ?>assets/pages/widget/excanvas.js"></script>
+  <!-- Warning Section Ends -->
 
-<!-- waves js -->
-<script src="<?php echo BASE_URL; ?>assets/pages/waves/js/waves.min.js"></script>
+  <!-- Required Jquery -->
+  <!-- Local JS Assets -->
+  <script type="text/javascript" src="<?php echo BASE_URL; ?>assets/js/jquery/jquery.min.js"></script>
+  <script type="text/javascript" src="<?php echo BASE_URL; ?>assets/js/jquery-ui/jquery-ui.min.js"></script>
+  <script type="text/javascript" src="<?php echo BASE_URL; ?>assets/js/popper.js/popper.min.js"></script>
+  <script type="text/javascript" src="<?php echo BASE_URL; ?>assets/js/bootstrap/js/bootstrap.min.js"></script>
+  <script type="text/javascript" src="<?php echo BASE_URL; ?>assets/pages/widget/excanvas.js"></script>
 
-<!-- jquery slimscroll js -->
-<script type="text/javascript" src="<?php echo BASE_URL; ?>assets/js/jquery-slimscroll/jquery.slimscroll.js"></script>
+  <!-- waves js -->
+  <script src="<?php echo BASE_URL; ?>assets/pages/waves/js/waves.min.js"></script>
 
-<!-- modernizr js -->
-<script type="text/javascript" src="<?php echo BASE_URL; ?>assets/js/modernizr/modernizr.js"></script>
+  <!-- jquery slimscroll js -->
+  <script type="text/javascript" src="<?php echo BASE_URL; ?>assets/js/jquery-slimscroll/jquery.slimscroll.js"></script>
 
-<!-- slimscroll js -->
-<script type="text/javascript" src="<?php echo BASE_URL; ?>assets/js/SmoothScroll.js"></script>
-<script src="<?php echo BASE_URL; ?>assets/js/jquery.mCustomScrollbar.concat.min.js"></script>
+  <!-- modernizr js -->
+  <script type="text/javascript" src="<?php echo BASE_URL; ?>assets/js/modernizr/modernizr.js"></script>
 
-<!-- Chart js -->
-<script type="text/javascript" src="<?php echo BASE_URL; ?>assets/js/chart.js/Chart.js"></script>
+  <!-- slimscroll js -->
+  <script type="text/javascript" src="<?php echo BASE_URL; ?>assets/js/SmoothScroll.js"></script>
+  <script src="<?php echo BASE_URL; ?>assets/js/jquery.mCustomScrollbar.concat.min.js"></script>
 
-<!-- External AmCharts JS (keep as-is) -->
-<script src="https://www.amcharts.com/lib/3/amcharts.js"></script>
-<script src="<?php echo BASE_URL; ?>assets/pages/widget/amchart/gauge.js"></script>
-<script src="<?php echo BASE_URL; ?>assets/pages/widget/amchart/serial.js"></script>
-<script src="<?php echo BASE_URL; ?>assets/pages/widget/amchart/light.js"></script>
-<script src="<?php echo BASE_URL; ?>assets/pages/widget/amchart/pie.min.js"></script>
-<script src="https://www.amcharts.com/lib/3/plugins/export/export.min.js"></script>
+  <!-- Chart js -->
+  <script type="text/javascript" src="<?php echo BASE_URL; ?>assets/js/chart.js/Chart.js"></script>
 
-<!-- Menu JS -->
-<script src="<?php echo BASE_URL; ?>assets/js/pcoded.min.js"></script>
-<script src="<?php echo BASE_URL; ?>assets/js/vertical-layout.min.js"></script>
+  <!-- External AmCharts JS (keep as-is) -->
+  <script src="https://www.amcharts.com/lib/3/amcharts.js"></script>
+  <script src="<?php echo BASE_URL; ?>assets/pages/widget/amchart/gauge.js"></script>
+  <script src="<?php echo BASE_URL; ?>assets/pages/widget/amchart/serial.js"></script>
+  <script src="<?php echo BASE_URL; ?>assets/pages/widget/amchart/light.js"></script>
+  <script src="<?php echo BASE_URL; ?>assets/pages/widget/amchart/pie.min.js"></script>
+  <script src="https://www.amcharts.com/lib/3/plugins/export/export.min.js"></script>
 
-<!-- Custom JS -->
-<script type="text/javascript" src="<?php echo BASE_URL; ?>assets/pages/dashboard/custom-dashboard.js"></script>
-<script type="text/javascript" src="<?php echo BASE_URL; ?>assets/js/script.js"></script>
+  <!-- Menu JS -->
+  <script src="<?php echo BASE_URL; ?>assets/js/pcoded.min.js"></script>
+  <script src="<?php echo BASE_URL; ?>assets/js/vertical-layout.min.js"></script>
 
-</body>
+  <!-- Custom JS -->
+  <script type="text/javascript" src="<?php echo BASE_URL; ?>assets/pages/dashboard/custom-dashboard.js"></script>
+  <!-- Select2 (CDN) -->
+  <script src="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/js/select2.min.js"></script>
+  <!-- Init Select2 on all selects (skip by adding class `no-select2`) -->
+  <script type="text/javascript" src="<?php echo BASE_URL; ?>assets/js/select2-init.js"></script>
 
-</html>
+  <script type="text/javascript" src="<?php echo BASE_URL; ?>assets/js/script.js"></script>
+
+  </body>
+
+  </html>

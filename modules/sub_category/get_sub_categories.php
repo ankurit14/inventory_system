@@ -1,5 +1,5 @@
 <?php
-include($_SERVER['DOCUMENT_ROOT'] . '/inventory_system/config/db.php');
+include(BASE_PATH.'/config/db.php');
 
 // Validate category_id
 $category_id = isset($_GET['category_id']) ? intval($_GET['category_id']) : 0;

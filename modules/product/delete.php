@@ -1,6 +1,6 @@
 <?php
 session_start();
-include($_SERVER['DOCUMENT_ROOT'].'/inventory_system/config/db.php');
+include_once __DIR__ . '/../../config/db.php';
 include('product_functions.php');
 
 if(!isset($_GET['id']) || !is_numeric($_GET['id'])) die("Invalid ID");

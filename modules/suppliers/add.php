@@ -1,29 +1,38 @@
 <?php
 session_start();
-include($_SERVER['DOCUMENT_ROOT'].'/inventory_system/config/path.php');
 
+include_once __DIR__ . '/../../config/path.php';
 include(BASE_PATH.'/includes/header.php');
 include(BASE_PATH.'/includes/sidebar.php');
 include('supplier_functions.php');
 
-$errors = [];
-$success = "";
-$old = $_POST ?? [];
+$error   = '';
+$success = '';
+$old     = $_POST ?? [];
 
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 
-    if (empty($_POST['name'])) $errors['name'] = "Supplier name is required!";
-    if (!empty($_POST['email']) && !filter_var($_POST['email'], FILTER_VALIDATE_EMAIL)) 
-        $errors['email'] = "Invalid email format!";
-    if (!empty($_POST['phone']) && !preg_match('/^[0-9]{10}$/', $_POST['phone'])) 
-        $errors['phone'] = "Phone must be 10 digits!";
+    // ---------- BACKEND VALIDATION ----------
+    if (empty($_POST['name'])) {
+        $error = "Supplier name is required!";
+    }
+    elseif (!empty($_POST['email']) && !filter_var($_POST['email'], FILTER_VALIDATE_EMAIL)) {
+        $error = "Invalid email format!";
+    }
+    elseif (!empty($_POST['phone']) && !preg_match('/^[6-9][0-9]{9}$/', $_POST['phone'])) {
+        $error = "Phone must be 10 digits & start with 6–9!";
+    }
 
-    if (empty($errors)) {
-        if (add_supplier($_POST)) {
+    // ---------- ADD SUPPLIER ----------
+    if ($error === '') {
+        $result = add_supplier($_POST);
+
+        if ($result === true) {
             $success = "Supplier added successfully!";
             $old = [];
         } else {
-            $errors['form'] = "Something went wrong!";
+            // result contains error message
+            $error = $result;
         }
     }
 }
@@ -117,13 +126,18 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 
 <div class="card p-4" style="max-width: 700px; margin:auto;">
 
-<?php if(isset($errors['form'])): ?>
-    <div class="alert alert-danger"><?= $errors['form'] ?></div>
+<?php if ($error): ?>
+    <div class="alert alert-danger auto-hide-alert">
+        <strong>Error!</strong> <?= htmlspecialchars($error) ?>
+    </div>
 <?php endif; ?>
 
-<?php if($success): ?>
-    <div class="alert alert-success"><?= $success ?></div>
+<?php if ($success): ?>
+    <div class="alert alert-success auto-hide-alert">
+        <strong>Success!</strong> <?= htmlspecialchars($success) ?>
+    </div>
 <?php endif; ?>
+
 
 <form method="POST" id="supplierForm" novalidate>
 
@@ -223,4 +237,8 @@ document.addEventListener("DOMContentLoaded", () => {
     });
 
 });
+
+  setTimeout(function () {
+        $('.auto-hide-alert').fadeOut('slow');
+    }, 2000); // 2000 ms = 2 seconds
 </script>

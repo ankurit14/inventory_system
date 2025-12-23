@@ -1,8 +1,8 @@
 <?php
 session_start();
 
-include($_SERVER['DOCUMENT_ROOT'].'/inventory_system/config/path.php');
-include($_SERVER['DOCUMENT_ROOT'].'/inventory_system/config/db.php');
+include_once __DIR__ . '/../../config/path.php';
+include_once __DIR__ . '/../../config/db.php';
 
 include(BASE_PATH.'/includes/header.php');
 include(BASE_PATH.'/includes/sidebar.php');
@@ -131,7 +131,7 @@ $res = mysqli_query($conn, $query);
             <thead>
                 <tr>
                     <th>#</th>
-                    <th>Request No</th>
+                   
                     <th>Requested By</th>
                     <th>Date</th>
                     <th>Status</th>
@@ -149,8 +149,8 @@ $res = mysqli_query($conn, $query);
             ?>
                 <tr>
                     <td><?= $i++ ?></td>
-                    <td><?= htmlspecialchars($row['request_no']) ?></td>
-                    <td><?= htmlspecialchars($row['user_name']) ?></td>
+                 
+                    <td><?= htmlspecialchars($row['user_name'] ?? '') ?></td>
                     <td><?= $row['request_date'] ?></td>
 
                     <td>

@@ -1,8 +1,8 @@
 <?php
 session_start();
 
-include($_SERVER['DOCUMENT_ROOT'].'/inventory_system/config/path.php');
-include($_SERVER['DOCUMENT_ROOT'].'/inventory_system/config/db.php');
+include_once __DIR__ . '/../../config/path.php';
+include_once __DIR__ . '/../../config/db.php';
 
 include(BASE_PATH.'/includes/header.php');
 include(BASE_PATH.'/includes/sidebar.php');
@@ -12,12 +12,23 @@ include(BASE_PATH.'/includes/sidebar.php');
 // ----------------------
 if (isset($_POST['submit_request'])) {
 
-    $user_id = $_SESSION['user_id'];
-    $remarks = mysqli_real_escape_string($conn, $_POST['remarks']);
+    // $user_id = $_SESSION['user_id'];
+    // $remarks = mysqli_real_escape_string($conn, $_POST['remarks']);
 
-    // 1️⃣ Insert main request
-    $sql = "INSERT INTO product_requests (request_by, remarks) 
-            VALUES ($user_id, '$remarks')";
+    // // 1️⃣ Insert main request
+    // $sql = "INSERT INTO product_requests (request_by, remarks) 
+    //         VALUES ($user_id, '$remarks')";
+    // mysqli_query($conn, $sql);
+
+    // $request_id = mysqli_insert_id($conn);
+
+    $user_id     = $_SESSION['user_id'];
+    $remarks     = mysqli_real_escape_string($conn, $_POST['remarks']);
+    $request_for = mysqli_real_escape_string($conn, $_POST['request_for']);
+
+    // Insert main request
+    $sql = "INSERT INTO product_requests (request_by, remarks, request_for) 
+            VALUES ($user_id, '$remarks', '$request_for')";
     mysqli_query($conn, $sql);
 
     $request_id = mysqli_insert_id($conn);
@@ -153,6 +164,20 @@ if (isset($_POST['submit_request'])) {
                 <label><b>Requested By:</b></label>
                 <input type="text" class="form-control" value="<?= $_SESSION['name']; ?>" readonly>
             </div>
+
+
+            <!-- REQUEST FOR -->
+<div class="mb-3">
+    <label><b>Request For</b></label>
+    <select name="request_for" class="form-control" required>
+        <option value="">Select Purpose</option>
+        <option value="Personal Use" selected>Personal Use</option>
+        <option value="Distribution">Distribution</option>
+        <option value="Project">Project</option>
+        <option value="Other">Other</option>
+    </select>
+</div>
+
 
             <!-- REMARKS -->
             <div class="mb-3">
