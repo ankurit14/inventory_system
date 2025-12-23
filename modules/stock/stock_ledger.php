@@ -1,7 +1,7 @@
 <?php
 // stock_ledger.php
-include($_SERVER['DOCUMENT_ROOT'].'/inventory_system/config/path.php');
-include($_SERVER['DOCUMENT_ROOT'].'/inventory_system/config/db.php');
+include_once __DIR__ . '/../../config/path.php';
+include_once __DIR__ . '/../../config/db.php';
 
 include(BASE_PATH.'/includes/header.php');
 include(BASE_PATH.'/includes/sidebar.php');
@@ -25,24 +25,34 @@ $base_sql = "
         sm.*,
 
         CASE 
-            WHEN sm.note = 'Purchased' 
-                THEN s.name        -- Supplier Name
-            ELSE u2.name           -- User Name
+            WHEN sm.note = 'Purchased' THEN s.name
+            WHEN sm.note = 'Emergency Issue' THEN 
+                CASE 
+                    WHEN ei.issued_to_type='employee' THEN u_emp.name
+                    ELSE ei.issued_to_name
+                END
+            ELSE u2.name
         END AS entry_name
 
     FROM stock_master sm
 
+    -- Purchase Join
     LEFT JOIN purchases p 
         ON sm.note = 'Purchased' AND sm.ref_id = p.id
-
     LEFT JOIN suppliers s 
         ON p.supplier_id = s.id
 
+    -- Product Request Join
     LEFT JOIN product_requests pr 
-        ON sm.note != 'Purchased' AND sm.ref_id = pr.id
-
+        ON sm.note = 'Product Request' AND sm.ref_id = pr.id
     LEFT JOIN users u2 
         ON pr.request_by = u2.id
+
+    -- Emergency Issue Join
+    LEFT JOIN emergency_issues ei
+        ON sm.note = 'Emergency Issue' AND sm.ref_id = ei.id
+    LEFT JOIN users u_emp
+        ON ei.issued_to_type='employee' AND ei.issued_to_id = u_emp.id
 
     WHERE sm.product_id = $product_id
 ";

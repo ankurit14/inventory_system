@@ -1,6 +1,6 @@
 <?php
 session_start();
-include($_SERVER['DOCUMENT_ROOT'].'/inventory_system/config/path.php');
+include_once __DIR__ . '/../../config/path.php';
 include(BASE_PATH.'/includes/header.php');
 include(BASE_PATH.'/includes/sidebar.php');
 include('purchase_functions.php');
@@ -129,9 +129,9 @@ $purchases = get_all_purchases();
             </td>
             <td>
                 <a href="view.php?id=<?= $row['id'] ?>" class="btn btn-sm btn-info">View</a>
-                <a href="edit.php?id=<?= $row['id'] ?>" class="btn btn-sm btn-primary">Edit</a>
+                <!-- <a href="edit.php?id=<?= $row['id'] ?>" class="btn btn-sm btn-primary">Edit</a>
                 <a href="delete.php?id=<?= $row['id'] ?>" class="btn btn-sm btn-danger"
-                   onclick="return confirm('Delete this purchase?')">Delete</a>
+                   onclick="return confirm('Delete this purchase?')">Delete</a> -->
             </td>
         </tr>
         <?php endwhile; ?>

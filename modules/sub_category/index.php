@@ -1,6 +1,6 @@
 <?php
 session_start();
-include($_SERVER['DOCUMENT_ROOT'].'/inventory_system/config/path.php');
+include_once __DIR__ . '/../../config/path.php';
 include(BASE_PATH.'/includes/header.php');
 include(BASE_PATH.'/includes/sidebar.php');
 include('sub_category_functions.php');
@@ -109,7 +109,7 @@ $current_role = $_SESSION['role'];
                 <td><?= $i++ ?></td>
                 <td><?= htmlspecialchars($row['category_name']) ?></td>
                 <td><?= htmlspecialchars($row['name']) ?></td>
-                <td><?= htmlspecialchars($row['description']) ?></td>
+                <td><?= htmlspecialchars($row['description'] ?? '') ?></td>
                 <td>
                 <?php if(in_array($current_role,['admin','hr'])): ?>
                     <button class="status-btn btn btn-sm 
@@ -162,27 +162,46 @@ function filterTable() {
 
 // STATUS TOGGLE BUTTON
 document.querySelectorAll('.status-btn').forEach(btn => {
-    btn.addEventListener('click', function() {
+    btn.addEventListener('click', function () {
 
         let id = this.dataset.id;
-        let currentStatus = this.textContent.toLowerCase();
+        let currentStatus = this.textContent.trim().toLowerCase();
         let newStatus = currentStatus === 'active' ? 'inactive' : 'active';
         let button = this;
 
-        fetch('toggle_status.php?id=' + id)
+        fetch("toggle_status.php", {
+            method: "POST",
+            headers: {
+                "Content-Type": "application/x-www-form-urlencoded"
+            },
+            body: "id=" + id + "&status=" + newStatus
+        })
         .then(res => res.text())
         .then(data => {
+
             if (data.trim() === "success") {
 
-                button.textContent = 
+                // Update text
+                button.textContent =
                     newStatus.charAt(0).toUpperCase() + newStatus.slice(1);
 
-                button.classList.toggle('btn-success');
-                button.classList.toggle('btn-secondary');
+                // Update color
+                if (newStatus === "active") {
+                    button.classList.remove("btn-secondary");
+                    button.classList.add("btn-success");
+                } else {
+                    button.classList.remove("btn-success");
+                    button.classList.add("btn-secondary");
+                }
 
             } else {
                 alert("Status update failed!");
             }
+
+        })
+        .catch(err => {
+            console.error(err);
+            alert("Something went wrong!");
         });
 
     });

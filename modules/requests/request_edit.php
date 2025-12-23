@@ -1,8 +1,8 @@
 <?php
 session_start();
 
-include($_SERVER['DOCUMENT_ROOT'].'/inventory_system/config/path.php');
-include($_SERVER['DOCUMENT_ROOT'].'/inventory_system/config/db.php');
+include_once __DIR__ . '/../../config/path.php';
+include_once __DIR__ . '/../../config/db.php';
 
 include(BASE_PATH.'/includes/header.php');
 include(BASE_PATH.'/includes/sidebar.php');
@@ -61,12 +61,13 @@ $items = mysqli_query($conn, "
 // ----------------------
 if (isset($_POST['update_request'])) {
 
-    $remarks = mysqli_real_escape_string($conn, $_POST['remarks']);
+    $remarks     = mysqli_real_escape_string($conn, $_POST['remarks']);
+    $request_for = mysqli_real_escape_string($conn, $_POST['request_for']);
 
     // Update main request
     mysqli_query($conn, "
         UPDATE product_requests 
-        SET remarks='$remarks'
+        SET remarks='$remarks', request_for='$request_for'
         WHERE id=$id
     ");
 
@@ -107,7 +108,7 @@ if (isset($_POST['update_request'])) {
 
 <div class="pcoded-content">
 <div class="card">
-    <div class="card-header">
+    <div class="card-header bg-primary text-white">
         <h4>Edit Product Request</h4>
     </div>
 
@@ -120,10 +121,22 @@ if (isset($_POST['update_request'])) {
                 <input type="text" class="form-control" value="<?= $_SESSION['name']; ?>" readonly>
             </div>
 
+            <!-- REQUEST FOR -->
+            <div class="mb-3">
+                <label><b>Request For</b></label>
+                <select name="request_for" class="form-control" required>
+                    <option value="">Select Purpose</option>
+                    <option value="Personal Use" <?= ($request['request_for']=='Personal Use') ? 'selected' : '' ?>>Personal Use</option>
+                    <option value="Distribution" <?= ($request['request_for']=='Distribution') ? 'selected' : '' ?>>Distribution</option>
+                    <option value="Project" <?= ($request['request_for']=='Project') ? 'selected' : '' ?>>Project</option>
+                    <option value="Other" <?= ($request['request_for']=='Other') ? 'selected' : '' ?>>Other</option>
+                </select>
+            </div>
+
             <!-- REMARKS -->
             <div class="mb-3">
                 <label>Remarks / Reason</label>
-                <textarea name="remarks" class="form-control" required><?= $request['remarks']; ?></textarea>
+                <textarea name="remarks" class="form-control" required><?= htmlspecialchars($request['remarks']); ?></textarea>
             </div>
 
             <hr>
@@ -132,62 +145,57 @@ if (isset($_POST['update_request'])) {
 
             <table class="table table-bordered" id="itemTable">
                 <thead>
-                <tr>
-                    <th width="20%">Category</th>
-                    <th width="20%">Sub Category</th>
-                    <th width="30%">Product</th>
-                    <th width="15%">Qty</th>
-                    <th width="15%">Action</th>
-                </tr>
+                    <tr>
+                        <th width="20%">Category</th>
+                        <th width="20%">Sub Category</th>
+                        <th width="30%">Product</th>
+                        <th width="15%">Qty</th>
+                        <th width="15%">Action</th>
+                    </tr>
                 </thead>
 
                 <tbody>
+                    <?php while ($row = mysqli_fetch_assoc($items)): ?>
+                        <tr>
+                            <!-- CATEGORY -->
+                            <td>
+                                <select class="form-control category" name="category_id[]" required>
+                                    <option value="">Select</option>
+                                    <?php
+                                    $cat = mysqli_query($conn, "SELECT id,name FROM category WHERE status='active'");
+                                    while ($c = mysqli_fetch_assoc($cat)):
+                                    ?>
+                                        <option value="<?= $c['id'] ?>" <?= ($c['id'] == $row['category_id']) ? 'selected' : '' ?>>
+                                            <?= $c['name'] ?>
+                                        </option>
+                                    <?php endwhile; ?>
+                                </select>
+                            </td>
 
-                <?php while ($row = mysqli_fetch_assoc($items)): ?>
-                    <tr>
+                            <!-- SUBCATEGORY -->
+                            <td>
+                                <select class="form-control subcategory" name="sub_category_id[]" required>
+                                    <option value="<?= $row['sub_category_id']; ?>"><?= $row['subcategory_name']; ?></option>
+                                </select>
+                            </td>
 
-                        <!-- CATEGORY -->
-                        <td>
-                            <select class="form-control category" name="category_id[]" required>
-                                <option value="">Select</option>
-                                <?php
-                                $cat = mysqli_query($conn, "SELECT id,name FROM category WHERE status='active'");
-                                while ($c = mysqli_fetch_assoc($cat)):
-                                ?>
-                                    <option value="<?= $c['id'] ?>" <?= ($c['id'] == $row['category_id']) ? "selected" : "" ?>>
-                                        <?= $c['name'] ?>
-                                    </option>
-                                <?php endwhile; ?>
-                            </select>
-                        </td>
+                            <!-- PRODUCT -->
+                            <td>
+                                <select class="form-control product" name="product_id[]" required>
+                                    <option value="<?= $row['product_id']; ?>"><?= $row['product_name']; ?></option>
+                                </select>
+                            </td>
 
-                        <!-- SUBCATEGORY -->
-                        <td>
-                            <select class="form-control subcategory" name="sub_category_id[]" required>
-                                <option value="<?= $row['sub_category_id']; ?>"><?= $row['subcategory_name']; ?></option>
-                            </select>
-                        </td>
+                            <!-- QTY -->
+                            <td>
+                                <input type="number" name="qty[]" class="form-control" value="<?= $row['qty_requested']; ?>" min="1" required>
+                            </td>
 
-                        <!-- PRODUCT -->
-                        <td>
-                            <select class="form-control product" name="product_id[]" required>
-                                <option value="<?= $row['product_id']; ?>"><?= $row['product_name']; ?></option>
-                            </select>
-                        </td>
-
-                        <!-- QTY -->
-                        <td>
-                            <input type="number" name="qty[]" class="form-control"
-                                   value="<?= $row['qty_requested']; ?>" min="1" required>
-                        </td>
-
-                        <td>
-                            <button type="button" class="btn btn-danger btn-sm removeRow">X</button>
-                        </td>
-
-                    </tr>
-                <?php endwhile; ?>
-
+                            <td>
+                                <button type="button" class="btn btn-danger btn-sm removeRow">X</button>
+                            </td>
+                        </tr>
+                    <?php endwhile; ?>
                 </tbody>
             </table>
 
@@ -257,7 +265,6 @@ $(document).on("click", ".removeRow", function () {
 // LOAD SUBCATEGORIES
 // ---------------------------
 $(document).on("change", ".category", function () {
-
     let category_id = $(this).val();
     let row = $(this).closest("tr");
 
@@ -276,7 +283,6 @@ $(document).on("change", ".category", function () {
 // LOAD PRODUCTS
 // ---------------------------
 $(document).on("change", ".subcategory", function () {
-
     let sub_category_id = $(this).val();
     let row = $(this).closest("tr");
 

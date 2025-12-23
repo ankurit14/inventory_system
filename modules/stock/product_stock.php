@@ -1,6 +1,6 @@
 <?php
 session_start();
-include($_SERVER['DOCUMENT_ROOT'].'/inventory_system/config/path.php');
+include_once __DIR__ . '/../../config/path.php';
 include(BASE_PATH.'/config/db.php');
 
 include(BASE_PATH.'/includes/header.php');
@@ -13,18 +13,19 @@ if (isset($_POST['export_low_stock'])) {
     header("Content-Type: application/vnd.ms-excel");
     header("Content-Disposition: attachment; filename=low_stock_report.xls");
 
-    echo "Product\tStock\tPrice\n";
+    echo "Product\tUnit\tStock\tPrice\n";
     $result = mysqli_query($conn, "SELECT * FROM products ORDER BY name ASC");
 
     while ($row = mysqli_fetch_assoc($result)) {
         $data = get_current_stock($row['id']);
         if ($data['stock'] <= 10) {
-            echo $row['name']."\t".$data['stock']."\t".$data['price']."\n";
+            echo $row['name']."\t".$row['unit']."\t".$data['stock']."\t".$data['price']."\n";
         }
     }
     exit;
 }
 ?>
+
 <style>
 .header-box {
     background: linear-gradient(135deg, #4e73df, #1cc88a);
@@ -41,7 +42,6 @@ if (isset($_POST['export_low_stock'])) {
     font-size: 24px;
     font-weight: 600;
 }
-
 .header-box h5 {
     color: #fff;
     margin: 0;
@@ -67,6 +67,9 @@ if (isset($_POST['export_low_stock'])) {
     background: #2d6cdf;
     color: #fff;
     font-size: 14px;
+    padding: 4px 6px !important;
+    height: 30px !important;
+    line-height: 14px;
 }
 .table tbody td {
     font-size: 14px;
@@ -83,29 +86,7 @@ if (isset($_POST['export_low_stock'])) {
 .status-btn {
     min-width: 80px;
 }
-.table thead th {
-    background: #2d6cdf;
-    color: white;
-    font-size: 14px;
-    padding: 4px 6px !important;
-    height: 30px !important;
-    line-height: 14px;
-}
 
-</style>
-<div class="pcoded-content">
-
-<div class="header-box">
-        <h2>Product List with Stock</h2>
-        <label>
-        <h5><input type="checkbox" id="lowStockOnly"> Show only low stock (≤10)</h5>
-    </label>
-    </div>
-
-
-
-
-<style>
 .stock-low { background: #ffe5e5; color:#b30000; font-weight:bold; }
 .stock-medium { background: #fff3e0; color:#ff6f00; font-weight:bold; }
 .stock-high { background: #e8f5e9; color:#2e7d32; font-weight:bold; }
@@ -114,47 +95,62 @@ table { border-collapse: collapse; }
 table th, table td { padding: 8px; border: 1px solid #ccc; text-align: center; }
 </style>
 
-<table border="1" width="100%" cellpadding="8" id="productTable">
-    <tr style="background:#eee;">
-        <th>#</th>
-        <th>Product</th>
-        <th>Price</th>
-        <th>Current Stock</th>
+<div class="pcoded-content">
+
+    <div class="header-box">
+        <h2>Product List with Stock</h2>
+        <label>
+            <h5><input type="checkbox" id="lowStockOnly"> Show only low stock (≤10)</h5>
+        </label>
+    </div>
+
+    <table border="1" width="100%" cellpadding="8" id="productTable">
+        <tr style="background:#eee;">
+            <th>#</th>
+            <th>Product</th>
+            <th>Unit</th> <!-- NEW -->
+            <th>Price</th>
+            <th>Current Stock</th>
+        </tr>
+
+    <?php
+    $res = mysqli_query($conn, "SELECT * FROM products ORDER BY id DESC");
+    $i = 1;
+
+    while ($row = mysqli_fetch_assoc($res)) {
+
+        $data = get_current_stock($row['id']);
+        $stock = $data['stock'];
+        $price = number_format($data['price'], 2);
+
+        // COLOR CLASS
+        if ($stock <= 0)
+            $stock_class = "stock-low";
+        elseif ($stock <= 10)
+            $stock_class = "stock-medium";
+        else
+            $stock_class = "stock-high";
+
+        // ALERT ICON
+        $alert_icon = ($stock <= 10) ? " 🔔" : "";
+    ?>
+    <tr>
+        <td><?= $i++ ?></td>
+        <td>
+            <a href="stock_ledger.php?product_id=<?= $row['id'] ?>" 
+                title="Click to view Stock Ledger for <?= htmlspecialchars($row['name']) ?>" 
+                style="text-decoration:none;">
+                <?= htmlspecialchars($row['name']) ?>
+                <i class="fa fa-book" style="color: #007bff; font-size: 16px; margin-left: 5px;" data-toggle="tooltip" data-placement="top" title="Stock Ledger"></i>
+            </a>
+        </td>
+
+        <td><?= htmlspecialchars($row['unit']) ?></td> <!-- NEW -->
+        <td><?= $price ?></td>
+        <td class="<?= $stock_class ?>"><?= $stock . $alert_icon ?></td>
     </tr>
-
-<?php
-$res = mysqli_query($conn, "SELECT * FROM products ORDER BY id DESC");
-$i = 1;
-
-while ($row = mysqli_fetch_assoc($res)) {
-
-    $data = get_current_stock($row['id']);
-    $stock = $data['stock'];
-    $price = number_format($data['price'], 2);
-
-    // COLOR CLASS
-    if ($stock <= 0)
-        $stock_class = "stock-low";
-    elseif ($stock <= 10)
-        $stock_class = "stock-medium";
-    else
-        $stock_class = "stock-high";
-
-    // ALERT ICON
-    $alert_icon = ($stock <= 10) ? " 🔔" : "";
-?>
-<tr>
-    <td><?= $i++ ?></td>
-    <td>
-        <a href="stock_ledger.php?product_id=<?= $row['id'] ?>" style="text-decoration:none;">
-            <?= htmlspecialchars($row['name']) ?>
-        </a>
-    </td>
-    <td><?= $price ?></td>
-    <td class="<?= $stock_class ?>"><?= $stock . $alert_icon ?></td>
-</tr>
-<?php } ?>
-</table>
+    <?php } ?>
+    </table>
 </div>
 
 <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
@@ -165,7 +161,7 @@ $("#lowStockOnly").change(function () {
     if (this.checked) {
         $("#productTable tr").each(function (index) {
             if (index === 0) return; // skip header
-            let stock = parseFloat($(this).find("td").eq(3).text());
+            let stock = parseFloat($(this).find("td").eq(4).text()); // STOCK COLUMN
             if (stock > 10) $(this).hide();
         });
     } else {

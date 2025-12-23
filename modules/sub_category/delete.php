@@ -1,5 +1,5 @@
 <?php
-include($_SERVER['DOCUMENT_ROOT'].'/inventory_system/config/path.php');
+include_once __DIR__ . '/../../config/path.php';
 include('sub_category_functions.php');
 
 if (!isset($_GET['id'])) die("ID not provided");

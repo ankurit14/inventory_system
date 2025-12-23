@@ -1,7 +1,7 @@
 <?php
-include($_SERVER['DOCUMENT_ROOT'].'/inventory_system/config/path.php');
-include(BASE_PATH.'/includes/header.php');
-include(BASE_PATH.'/includes/sidebar.php');
+include_once __DIR__ . '/../../config/path.php';
+include(BASE_PATH . '/includes/header.php');
+include(BASE_PATH . '/includes/sidebar.php');
 include('sub_category_functions.php');
 
 $error = "";
@@ -12,160 +12,153 @@ $categories = mysqli_query($conn, "SELECT id, name FROM category WHERE status='a
 
 if ($_SERVER["REQUEST_METHOD"] == "POST") {
 
-    if (empty($_POST['name']) || empty($_POST['category_id'])) {
+    $name = trim($_POST['name']);
+    $category_id = $_POST['category_id'];
+    $description = trim($_POST['description'] ?? '');
+
+    if ($name === "" || $category_id === "") {
         $error = "Please fill all required fields.";
     } else {
-        $data = [
-            'category_id' => $_POST['category_id'],
-            'name'        => $_POST['name'],
-            'description' => $_POST['description'],
-            'status'      => 'active'   // default
-        ];
 
-        if (add_subcategory($data)) {
-            $success = "Sub Category added successfully!";
+        // SERVER SIDE DUPLICATE CHECK
+        $safeName = mysqli_real_escape_string($conn, $name);
+        $safeCatId = intval($category_id);
+        $check = mysqli_query($conn,
+            "SELECT id FROM sub_category WHERE category_id=$safeCatId AND LOWER(name)=LOWER('$safeName') LIMIT 1"
+        );
+
+        if (mysqli_num_rows($check) > 0) {
+            $error = "Sub Category already exists in this category.";
         } else {
-            $error = "Error inserting data.";
+
+            $data = [
+                'category_id' => $safeCatId,
+                'name'        => $name,
+                'description' => $description,
+                'status'      => 'active'
+            ];
+
+            if (add_subcategory($data)) {
+                $success = "Sub Category added successfully!";
+            } else {
+                $error = "Error inserting data.";
+            }
         }
     }
 }
 ?>
+
 <style>
-.header-box {
-    background: linear-gradient(135deg, #4e73df, #1cc88a);
-    padding: 15px 20px;
-    border-radius: 8px;
-    align-items: center;
-    margin-bottom: 20px;
-}
-.header-box h2 {
-    color: #fff;
-    margin: 0;
-    font-size: 24px;
-    font-weight: 600;
-    text-align: center;
-}
-
-.header-box h5 {
-    color: #fff;
-    margin: 0;
-    font-size: 20px;
-    font-weight: 200;
-}
-.header-box a.btn {
-    color: #1f2937;
-    background-color: #fff;
-    padding: 6px 15px;
-    border-radius: 6px;
-    text-decoration: none;
-}
-
-.filter-container input, .filter-container select {
-    padding: 6px 10px;
-    font-size: 14px;
-    border-radius: 6px;
-    border: 1px solid #ccc;
-}
-
-.table thead th {
-    background: #2d6cdf;
-    color: #fff;
-    font-size: 14px;
-}
-.table tbody td {
-    font-size: 14px;
-    padding: 6px 10px;
-}
-.table tbody tr:hover {
-    background: #f1f5ff;
-}
-
-.btn-sm {
-    padding: 3px 7px;
-    font-size: 13px;
-}
-.status-btn {
-    min-width: 80px;
-}
-.table thead th {
-    background: #2d6cdf;
-    color: white;
-    font-size: 14px;
-    padding: 4px 6px !important;
-    height: 30px !important;
-    line-height: 14px;
-}
-.page-header-bg {
-    position: absolute;
-    top: 5px;
-    left: 0;
-    width: 100%;
-    height: 50%;
-    background: linear-gradient(135deg, #4e73df, #1cc88a);
-    z-index: 1;
-    border-radius: 8px;
-}
-
+.header-box {background: linear-gradient(135deg, #4e73df, #1cc88a); padding: 15px 20px; border-radius: 8px; margin-bottom: 20px; text-align: center;}
+.header-box h2 {color: #fff; margin: 0; font-size: 24px; font-weight: 600;}
+.card {border-radius: 10px; box-shadow: 0 4px 20px rgba(0,0,0,0.08);}
+.form-container {max-width: 600px; margin: 0 auto; padding: 30px 15px;}
 </style>
+
 <div class="pcoded-content">
 
-    <!-- Page Header -->
-    <div class="header-box mt-4 text-center">
+    <div class="header-box mt-4 mb-4">
         <h2>Add Sub Category</h2>
-        <!-- <p class="text-muted">Create a new sub category under an existing category</p> -->
     </div>
 
-    <!-- Center Form -->
-    <div class="row justify-content-center">
-        <div class="col-md-6">
+    <div class="form-container">
 
-            <div class="card shadow-sm">
-                <div class="card-body">
+        <div class="card">
+            <div class="card-body">
 
-                    <?php if($error): ?>
-                        <div class="alert alert-danger"><?= $error ?></div>
-                    <?php endif; ?>
+                <?php if ($error): ?>
+                    <div class="alert alert-danger auto-hide-alert"><?= $error ?></div>
+                <?php endif; ?>
 
-                    <?php if($success): ?>
-                        <div class="alert alert-success"><?= $success ?></div>
-                    <?php endif; ?>
+                <?php if ($success): ?>
+                    <div class="alert alert-success auto-hide-alert"><?= $success ?></div>
+                <?php endif; ?>
 
-                    <form method="POST">
+                <form method="POST" id="addSubCategoryForm">
 
-                        <!-- Category -->
-                        <div class="mb-3">
-                            <label class="form-label fw-bold">Category *</label>
-                            <select name="category_id" class="form-select" required>
-                                <option value="">Select Category</option>
-                                <?php while($cat = mysqli_fetch_assoc($categories)): ?>
-                                    <option value="<?= $cat['id'] ?>"><?= $cat['name'] ?></option>
-                                <?php endwhile; ?>
-                            </select>
-                        </div>
+                    <div class="mb-3">
+                        <label class="form-label fw-bold">Category *</label>
+                        <select name="category_id" id="category_id" class="form-select" required>
+                            <option value="">Select Category</option>
+                            <?php while ($cat = mysqli_fetch_assoc($categories)): ?>
+                                <option value="<?= $cat['id'] ?>"><?= $cat['name'] ?></option>
+                            <?php endwhile; ?>
+                        </select>
+                    </div>
 
-                        <!-- Sub Category Name -->
-                        <div class="mb-3">
-                            <label class="form-label fw-bold">Sub Category Name *</label>
-                            <input type="text" name="name" class="form-control" placeholder="Enter Sub Category" required>
-                        </div>
+                    <div class="mb-3">
+                        <label class="form-label fw-bold">Sub Category Name *</label>
+                        <input type="text" name="name" id="sub_name" class="form-control" placeholder="Enter Sub Category" required>
+                        <small id="subcategory-msg"></small>
+                    </div>
 
-                        <!-- Description -->
-                        <div class="mb-3">
-                            <label class="form-label fw-bold">Description</label>
-                            <textarea name="description" class="form-control" placeholder="Write something..."></textarea>
-                        </div>
+                    <div class="mb-3">
+                        <label class="form-label fw-bold">Description</label>
+                        <textarea name="description" class="form-control" placeholder="Write something..."></textarea>
+                    </div>
 
-                        <!-- Submit -->
-                        <button class="btn btn-primary w-100">Add Sub Category</button>
+                    <button type="submit" class="btn btn-primary w-100" id="saveBtn" disabled>Add Sub Category</button>
 
-                    </form>
+                </form>
 
-                </div>
             </div>
-
         </div>
+
     </div>
 
 </div>
 
-<?php include(BASE_PATH.'/includes/footer.php'); ?>
+<?php include(BASE_PATH . '/includes/footer.php'); ?>
+
+<script>
+document.addEventListener("DOMContentLoaded", () => {
+
+    const categorySelect = document.getElementById("category_id");
+    const subNameInput = document.getElementById("sub_name");
+    const msg = document.getElementById("subcategory-msg");
+    const saveBtn = document.getElementById("saveBtn");
+
+    // AUTO HIDE ALERT
+    setTimeout(() => {
+        document.querySelectorAll(".auto-hide-alert").forEach(alert => {
+            alert.style.transition = "opacity 0.5s";
+            alert.style.opacity = "0";
+            setTimeout(() => alert.remove(), 500);
+        });
+    }, 2000);
+
+    // REAL-TIME DUPLICATE CHECK
+    function checkSubCategory() {
+        const name = subNameInput.value.trim();
+        const catId = categorySelect.value;
+
+        if (name === "" || catId === "") {
+            msg.innerHTML = "";
+            saveBtn.disabled = true;
+            return;
+        }
+
+        fetch("check_subcategory.php", {
+            method: "POST",
+            headers: {"Content-Type": "application/x-www-form-urlencoded"},
+            body: "name=" + encodeURIComponent(name) + "&category_id=" + encodeURIComponent(catId)
+        })
+        .then(res => res.text())
+        .then(data => {
+            if (data === "exists") {
+                msg.innerHTML = "❌ Sub Category already exists in this category";
+                msg.style.color = "red";
+                saveBtn.disabled = true;
+            } else {
+                msg.innerHTML = "✅ Sub Category available";
+                msg.style.color = "green";
+                saveBtn.disabled = false;
+            }
+        });
+    }
+
+    subNameInput.addEventListener("keyup", checkSubCategory);
+    categorySelect.addEventListener("change", checkSubCategory);
+
+});
+</script>

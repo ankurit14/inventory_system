@@ -1,5 +1,5 @@
 <?php
-include($_SERVER['DOCUMENT_ROOT'].'/inventory_system/config/db.php');
+include_once __DIR__ . '/../../config/db.php';
 
 function get_current_stock($product_id) {
     global $conn;

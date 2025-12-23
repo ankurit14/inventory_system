@@ -1,6 +1,6 @@
 <?php
 session_start();
-include($_SERVER['DOCUMENT_ROOT'].'/inventory_system/config/path.php');
+include_once __DIR__ . '/../../config/path.php';
 
 include(BASE_PATH.'/includes/header.php');
 include(BASE_PATH.'/includes/sidebar.php');
@@ -70,8 +70,8 @@ $current_role = $_SESSION['role'] ?? 'user';
             <tr>
                 <td><?= $i++ ?></td>
                 <td><?= htmlspecialchars($row['name']) ?></td>
-                <td><?= htmlspecialchars($row['phone']) ?></td>
-                <td><?= htmlspecialchars($row['email']) ?></td>
+                <td><?= htmlspecialchars($row['phone'] ?? '') ?></td>
+                <td><?= htmlspecialchars($row['email']?? '') ?></td>
                 <td>
                     <?php if(in_array($current_role, ['admin','hr'])): ?>
                         <button class="status-btn btn btn-sm 
@@ -87,9 +87,9 @@ $current_role = $_SESSION['role'] ?? 'user';
                 </td>
                 <td>
                     <a href="edit.php?id=<?= $row['id'] ?>" class="btn btn-sm btn-info">Edit</a>
-                    <a onclick="return confirm('Delete supplier?')" 
+                    <!-- <a onclick="return confirm('Delete supplier?')" 
                        href="delete.php?id=<?= $row['id'] ?>" 
-                       class="btn btn-sm btn-danger">Delete</a>
+                       class="btn btn-sm btn-danger">Delete</a> -->
                 </td>
             </tr>
         <?php endwhile; ?>

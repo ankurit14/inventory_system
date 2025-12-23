@@ -1,5 +1,5 @@
 <?php
-include_once($_SERVER['DOCUMENT_ROOT'].'/inventory_system/config/db.php');
+include_once __DIR__ . '/../../config/db.php';
 
 // Fetch all categories
 function get_all_categories() {

@@ -1,6 +1,6 @@
 <?php
 session_start();
-include($_SERVER['DOCUMENT_ROOT'].'/inventory_system/config/path.php');
+include_once __DIR__ . '/../../config/path.php';
 
 include(BASE_PATH.'/includes/header.php');
 include(BASE_PATH.'/includes/sidebar.php');
@@ -23,21 +23,34 @@ $success = "";
 // Handle POST
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 
-    // Backend Validations
-    if (empty($_POST['name'])) $errors['name'] = "Supplier name is required!";
-    if (!empty($_POST['email']) && !filter_var($_POST['email'], FILTER_VALIDATE_EMAIL))
-        $errors['email'] = "Invalid email format!";
-    if (!empty($_POST['phone']) && !preg_match('/^[0-9]{10}$/', $_POST['phone']))
-        $errors['phone'] = "Phone must be 10 digits!";
+    // ---------------- BASIC BACKEND VALIDATION ----------------
+    if (empty($_POST['name'])) {
+        $errors['name'] = "Supplier name is required!";
+    }
 
+    if (!empty($_POST['email']) && !filter_var($_POST['email'], FILTER_VALIDATE_EMAIL)) {
+        $errors['email'] = "Invalid email format!";
+    }
+
+    if (!empty($_POST['phone']) && !preg_match('/^[6-9][0-9]{9}$/', $_POST['phone'])) {
+        $errors['phone'] = "Phone must be 10 digits and start with 6-9!";
+    }
+
+    // ---------------- DUPLICATE + UPDATE ----------------
     if (empty($errors)) {
-        if (update_supplier($id, $_POST)) {
+
+        // ⚠️ IMPORTANT: use SAFE function
+        $result = update_supplier_safe($id, $_POST);
+
+        if ($result === true) {
             $success = "Supplier updated successfully!";
         } else {
-            $errors['form'] = "Update failed!";
+            // $result contains exact error message
+            $errors['form'] = $result;
         }
     }
 }
+
 ?>
 
 <div class="pcoded-content">

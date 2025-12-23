@@ -1,6 +1,7 @@
 <?php
 session_start();
-include($_SERVER['DOCUMENT_ROOT'].'/inventory_system/config/path.php');
+include_once __DIR__ . '/../../config/path.php';
+include_once __DIR__ . '/../../config/db.php';
 include(BASE_PATH.'/includes/category_functions.php');
 include(BASE_PATH.'/includes/header.php');
 include(BASE_PATH.'/includes/sidebar.php');
@@ -10,65 +11,38 @@ $current_role = $_SESSION['role']; // login user role
 ?>
 
 <style>
+/* Table styling like supplier module */
+.table th,
+.table td {
+    padding: 4px 8px !important;
+    vertical-align: middle;
+    font-size: 13px;
+}
+
+.btn-sm {
+    padding: 2px 6px;
+    font-size: 12px;
+}
+
 .header-box {
     background: linear-gradient(135deg, #4e73df, #1cc88a);
     padding: 15px 20px;
     border-radius: 8px;
     display: flex;
     justify-content: space-between;
-    align-items: center;
     margin-bottom: 20px;
 }
-.header-box h2 {
-    color: #fff;
-    margin: 0;
-    font-size: 24px;
-    font-weight: 600;
-}
-.header-box a.btn {
-    color: #1f2937;
-    background-color: #fff;
-    padding: 6px 15px;
-    border-radius: 6px;
-    text-decoration: none;
-}
-
-.filter-container input, .filter-container select {
-    padding: 6px 10px;
-    font-size: 14px;
-    border-radius: 6px;
-    border: 1px solid #ccc;
-}
+.header-box h2 { color:#fff; margin:0; font-size:22px; }
+.header-box a.btn { background:#fff; padding:6px 12px; }
 
 .table thead th {
-    background: #2d6cdf;
-    color: #fff;
-    font-size: 14px;
+    background:#2d6cdf;
+    color:#fff;
+    padding:6px 10px;
 }
-.table tbody td {
-    font-size: 14px;
-    padding: 6px 10px;
-}
-.table tbody tr:hover {
-    background: #f1f5ff;
-}
-
-.btn-sm {
-    padding: 3px 7px;
-    font-size: 13px;
-}
-.status-btn {
+.status-btn.btn-sm {
     min-width: 80px;
 }
-.table thead th {
-    background: #2d6cdf;
-    color: white;
-    font-size: 14px;
-    padding: 4px 6px !important;
-    height: 30px !important;
-    line-height: 14px;
-}
-
 </style>
 
 <div class="pcoded-content">
@@ -78,6 +52,20 @@ $current_role = $_SESSION['role']; // login user role
         <h2>Category List</h2>
         <a href="add.php" class="btn btn-light shadow-sm">+ Add Category</a>
     </div>
+
+    <!-- MESSAGE SECTION -->
+    <?php if (isset($_GET['msg'])): ?>
+        <?php if ($_GET['msg'] == 'used'): ?>
+            <div class="alert alert-danger alert-msg">❌ This category cannot be deleted because it is used in Sub Categories.</div>
+        <?php elseif ($_GET['msg'] == 'deleted'): ?>
+            <div class="alert alert-success alert-msg">✔ Category deleted successfully.</div>
+        <?php elseif ($_GET['msg'] == 'error'): ?>
+            <div class="alert alert-danger alert-msg">❌ Error deleting category.</div>
+        <?php elseif ($_GET['msg'] == 'invalid'): ?>
+            <div class="alert alert-warning alert-msg">⚠ Invalid category ID.</div>
+        <?php endif; ?>
+    <?php endif; ?>
+    <!-- END MESSAGE SECTION -->
 
     <!-- Filter Section -->
     <div class="filter-container row g-2 mb-3">
@@ -110,7 +98,7 @@ $current_role = $_SESSION['role']; // login user role
             <tr>
                 <td><?= $i++ ?></td>
                 <td><?= htmlspecialchars($row['name']) ?></td>
-                <td><?= htmlspecialchars($row['description']) ?></td>
+                <td><?= htmlspecialchars($row['description'] ?? '') ?></td>
 
                 <td>
                     <?php if(in_array($current_role, ['admin','hr'])): ?>
@@ -126,7 +114,7 @@ $current_role = $_SESSION['role']; // login user role
 
                 <td>
                     <a href="edit.php?id=<?= $row['id'] ?>" class="btn btn-sm btn-info">Edit</a>
-                    <a href="delete.php?id=<?= $row['id'] ?>" class="btn btn-sm btn-danger" onclick="return confirm('Sure to delete?')">Delete</a>
+                    <!-- <a href="delete.php?id=<?= $row['id'] ?>" class="btn btn-sm btn-danger" onclick="return confirm('Sure to delete?')">Delete</a> -->
                 </td>
             </tr>
             <?php endwhile; ?>
@@ -134,6 +122,9 @@ $current_role = $_SESSION['role']; // login user role
     </table>
 
 </div>
+
+<!-- jQuery -->
+<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
 
 <script>
 // SEARCH + FILTER
@@ -156,7 +147,7 @@ function filterTable() {
     });
 }
 
-// STATUS TOGGLE (Same as users module)
+// STATUS UPDATE
 document.querySelectorAll('.status-btn').forEach(btn => {
     btn.addEventListener('click', function() {
 
@@ -173,22 +164,19 @@ document.querySelectorAll('.status-btn').forEach(btn => {
         .then(res => res.text())
         .then(data => {
             if(data.trim() === "success") {
-                
                 button.textContent = newStatus.charAt(0).toUpperCase() + newStatus.slice(1);
-
-                if(newStatus === "active") {
-                    button.classList.remove("btn-secondary");
-                    button.classList.add("btn-success");
-                } else {
-                    button.classList.remove("btn-success");
-                    button.classList.add("btn-secondary");
-                }
-
+                button.classList.toggle("btn-success");
+                button.classList.toggle("btn-secondary");
             } else {
                 alert("Status update failed!");
             }
         });
     });
+});
+
+// AUTO HIDE ALERTS AFTER 2 SECONDS
+$(document).ready(function(){
+    $(".alert-msg").delay(2000).fadeOut(500);
 });
 </script>
 

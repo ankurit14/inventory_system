@@ -1,10 +1,13 @@
 <?php
-include($_SERVER['DOCUMENT_ROOT'].'/inventory_system/config/path.php');
-include($_SERVER['DOCUMENT_ROOT'].'/inventory_system/config/db.php');
+session_start();
+
+include_once __DIR__ . '/../../config/path.php';
+include_once __DIR__ . '/../../config/db.php';
 
 include(BASE_PATH.'/includes/header.php');
 include(BASE_PATH.'/includes/sidebar.php');
 
+// Access control
 if (!isset($_SESSION['role']) || $_SESSION['role'] != 'admin') {
     header("Location: ../login.php");
     exit;
@@ -12,7 +15,7 @@ if (!isset($_SESSION['role']) || $_SESSION['role'] != 'admin') {
 
 $id = intval($_GET['id']);
 
-// Fetch request
+// Fetch main request
 $req = mysqli_query($conn, "SELECT * FROM product_requests WHERE id=$id");
 $request = mysqli_fetch_assoc($req);
 
@@ -44,11 +47,11 @@ $items = mysqli_query($conn, "
             <?php while ($row = mysqli_fetch_assoc($items)): ?>
                 <tr>
                     <td><?= $row['product_name'] ?></td>
-
                     <td><?= $row['qty_hr_approved'] ?></td>
 
                     <td>
-                        <input type="number" class="form-control"
+                        <input type="number" 
+                               class="form-control"
                                name="final_qty[<?= $row['id'] ?>]"
                                value="<?= $row['qty_hr_approved'] ?>"
                                min="0" step="0.01">
@@ -76,18 +79,24 @@ $items = mysqli_query($conn, "
    ====================================================== */
 if (isset($_POST['approve'])) {
 
+    // Get request_for from master table
+    $rq = mysqli_fetch_assoc(mysqli_query($conn, "
+        SELECT request_for FROM product_requests WHERE id = $id
+    "));
+    $request_for = mysqli_real_escape_string($conn, $rq['request_for']);
+
     foreach ($_POST['final_qty'] as $item_id => $qty) {
 
         $qty = floatval($qty);
 
-        // Get product for stock deduction check
+        // Get item details
         $item = mysqli_fetch_assoc(mysqli_query($conn,"
             SELECT * FROM product_request_items WHERE id=$item_id
         "));
 
         $product_id = $item['product_id'];
 
-        // 1) Update final qty
+        // 1) Update final qty in item table
         mysqli_query($conn, "
             UPDATE product_request_items
             SET qty_admin_approved = $qty,
@@ -96,12 +105,14 @@ if (isset($_POST['approve'])) {
             WHERE id = $item_id
         ");
 
-        // 2) Deduct stock (ONLY ONCE)
+        // 2) Deduct stock only once
         if ($qty > 0 && $item['stock_deducted'] == 0) {
 
             mysqli_query($conn, "
-                INSERT INTO stock_master (product_id, stock_out, source, ref_id, note)
-                VALUES ($product_id, $qty, 'issue', $id, 'Issued on admin approval')
+                INSERT INTO stock_master 
+                (product_id, stock_out, source, ref_id, note, request_for)
+                VALUES 
+                ($product_id, $qty, 'issue', $id, 'Issued on admin approval', '$request_for')
             ");
 
             mysqli_query($conn, "

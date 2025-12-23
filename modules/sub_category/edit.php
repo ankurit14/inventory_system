@@ -1,7 +1,7 @@
 <?php
 session_start();
 
-include($_SERVER['DOCUMENT_ROOT'] . '/inventory_system/config/path.php');
+include_once __DIR__ . '/../../config/path.php';
 include(BASE_PATH . '/includes/header.php');
 include(BASE_PATH . '/includes/sidebar.php');
 include('sub_category_functions.php');
